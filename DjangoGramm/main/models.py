@@ -41,3 +41,14 @@ class FollowerFollowing(models.Model):
     following_id = User()
 
 
+class MediaType(models.Model):
+    name = models.CharField(max_length=10)
+
+
+class Media(models.Model):
+    media_type_id = models.ForeignKey(MediaType)
+    media_src = models.CharField(max_length=100)
+
+
+
+
