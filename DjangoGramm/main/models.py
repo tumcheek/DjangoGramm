@@ -50,5 +50,15 @@ class Media(models.Model):
     media_src = models.CharField(max_length=100)
 
 
+class Post(models.Model):
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.ManyToManyField(Media)
+    create_at = models.DateTimeField('date published')
+
+    def create_post(self, user_id, content):
+        self.user_id = user_id
+        self.content = content
+
+
 
 
