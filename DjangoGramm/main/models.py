@@ -60,5 +60,19 @@ class Post(models.Model):
         self.content = content
 
 
+class Base(models.Model):
+    post_id = models.ManyToManyField(Post)
+    user_id = models.ManyToManyField(User)
 
+
+class Like(Base):
+    likes = models.IntegerField(default=0)
+
+
+class Tag(Base):
+    tag = models.CharField(max_length=50)
+
+
+class Bookmarks(models.Model):
+    is_bookmark = models.BooleanField(default=False)
 
