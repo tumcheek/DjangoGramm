@@ -35,3 +35,9 @@ class User(models.Model):
     def get_user(self):
         return self.email, self.first_name, self.last_name, self.bio, self.avatar
 
+
+class FollowerFollowing(models.Model):
+    follower_id = User()
+    following_id = User()
+
+
