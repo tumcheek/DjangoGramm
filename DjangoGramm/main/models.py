@@ -46,7 +46,7 @@ class MediaType(models.Model):
 
 
 class Media(models.Model):
-    media_type_id = models.ForeignKey(MediaType)
+    media_type_id = models.ForeignKey(MediaType, on_delete=models.CASCADE)
     media_src = models.CharField(max_length=100)
 
 
@@ -70,7 +70,7 @@ class Like(Base):
 
 
 class Tag(Base):
-    tag = models.CharField(max_length=50)
+    tags = models.CharField(max_length=50)
 
 
 class Bookmarks(Base):
