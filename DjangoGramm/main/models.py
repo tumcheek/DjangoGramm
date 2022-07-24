@@ -9,22 +9,22 @@ class User(models.Model):
     bio = models.CharField(max_length=250)
     avatar = models.CharField(max_length=120)
 
-    def create_unique_link(self, user_id):
-        return f'django-gram/activate/{user_id}'
+    def create_unique_link(self):
+        return f'django-gram/activate/{User.pk}'
 
-    def send_unique_link(self, user_id):
+    def send_unique_link(self):
 
         send_mail(
             subject='Activation',
-            message=self.create_unique_link(user_id),
+            message=self.create_unique_link(),
             from_email='from@example.com',
             recipient_list=[self.email],
             fail_silently=False,
         )
 
-    def create_user(self, email, user_id):
+    def create_user(self, email):
         self.email = email
-        self.send_unique_link(user_id)
+        self.send_unique_link()
 
     def set_user(self, first_name, last_name, bio, avatar):
         self.first_name = first_name
@@ -73,6 +73,6 @@ class Tag(Base):
     tag = models.CharField(max_length=50)
 
 
-class Bookmarks(models.Model):
+class Bookmarks(Base):
     is_bookmark = models.BooleanField(default=False)
 
