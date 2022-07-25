@@ -10,8 +10,8 @@ class UserModel(models.Model):
 
 
 class FollowerFollowingModel(models.Model):
-    follower_id = models.ManyToManyField(UserModel)
-    following_id = models.ManyToManyField(UserModel)
+    follower_id = models.ManyToManyField(UserModel, related_name='follower')
+    following_id = models.ManyToManyField(UserModel, related_name='following')
 
 
 class MediaTypeModel(models.Model):
