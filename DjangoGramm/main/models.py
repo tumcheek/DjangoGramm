@@ -32,8 +32,9 @@ class MediaModel(TimeStampMixin):
 
 
 class PostModel(TimeStampMixin):
-    user_id = models.ForeignKey(UserModel, on_delete=models.CASCADE)
-    content = models.ManyToManyField(MediaModel)
+    user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
+    medias = models.ManyToManyField(MediaModel)
+    content = models.TextField()
 
 
 class BaseModel(models.Model):
