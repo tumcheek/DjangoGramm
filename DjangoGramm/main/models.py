@@ -18,15 +18,22 @@ class MediaTypeModel(models.Model):
     name = models.CharField(max_length=10)
 
 
-class MediaModel(models.Model):
+class TimeStampMixin(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+
+
+class MediaModel(TimeStampMixin):
     media_type_id = models.ForeignKey(MediaTypeModel, on_delete=models.CASCADE)
     media_src = models.CharField(max_length=100)
 
 
-class PostModel(models.Model):
+class PostModel(TimeStampMixin):
     user_id = models.ForeignKey(UserModel, on_delete=models.CASCADE)
     content = models.ManyToManyField(MediaModel)
-    create_at = models.DateTimeField('date published')
 
 
 class BaseModel(models.Model):
