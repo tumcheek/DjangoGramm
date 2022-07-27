@@ -10,8 +10,8 @@ class UserModel(models.Model):
 
 
 class FollowerFollowingModel(models.Model):
-    follower_id = models.ManyToManyField(UserModel, related_name='follower')
-    following_id = models.ManyToManyField(UserModel, related_name='following')
+    follower = models.ManyToManyField(UserModel, related_name='follower')
+    following = models.ManyToManyField(UserModel, related_name='following')
 
 
 class MediaTypeModel(models.Model):
@@ -27,7 +27,7 @@ class TimeStampMixin(models.Model):
 
 
 class MediaModel(TimeStampMixin):
-    media_type_id = models.ForeignKey(MediaTypeModel, on_delete=models.CASCADE)
+    media_type = models.ForeignKey(MediaTypeModel, on_delete=models.CASCADE)
     media_src = models.CharField(max_length=100)
 
 
