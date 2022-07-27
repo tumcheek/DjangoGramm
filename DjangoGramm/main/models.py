@@ -37,8 +37,8 @@ class PostModel(TimeStampMixin):
 
 
 class BaseModel(models.Model):
-    post_id = models.ManyToManyField(PostModel)
-    user_id = models.ManyToManyField(UserModel)
+    post = models.ManyToManyField(PostModel)
+    user = models.ManyToManyField(UserModel)
 
 
 class LikeModel(BaseModel):
@@ -46,7 +46,7 @@ class LikeModel(BaseModel):
 
 
 class TagModel(BaseModel):
-    tags = models.CharField(max_length=50)
+    name = models.CharField(max_length=120)
 
 
 class BookmarksModel(BaseModel):
