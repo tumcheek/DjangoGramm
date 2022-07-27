@@ -37,8 +37,8 @@ class PostModel(TimeStampMixin):
 
 
 class BaseModel(models.Model):
-    post = models.ManyToManyField(PostModel)
-    user = models.ManyToManyField(UserModel)
+    post = models.ForeignKey(PostModel, on_delete=models.CASCADE)
+    user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
 
 
 class LikeModel(BaseModel):
@@ -47,6 +47,8 @@ class LikeModel(BaseModel):
 
 class TagModel(BaseModel):
     name = models.CharField(max_length=120)
+    post = models.ManyToManyField(PostModel)
+    user = models.ManyToManyField(UserModel)
 
 
 class BookmarksModel(BaseModel):
