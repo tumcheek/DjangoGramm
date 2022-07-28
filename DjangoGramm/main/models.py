@@ -46,7 +46,7 @@ class LikeModel(BaseModel):
     likes = models.IntegerField(default=0)
 
 
-class TagModel(BaseModel):
+class TagModel(models.Model):
     name = models.CharField(max_length=120)
     post = models.ManyToManyField(PostModel)
     user = models.ManyToManyField(UserModel)
