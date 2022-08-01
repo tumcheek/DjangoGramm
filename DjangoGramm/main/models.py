@@ -37,12 +37,7 @@ class PostModel(TimeStampMixin):
     content = models.TextField()
 
 
-class BaseModel(models.Model):
-    post = models.ForeignKey(PostModel, on_delete=models.CASCADE)
-    user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
-
-
-class LikeModel(BaseModel):
+class LikeModel(models.Model):
     likes = models.IntegerField(default=0)
 
 
@@ -52,6 +47,6 @@ class TagModel(models.Model):
     user = models.ManyToManyField(UserModel)
 
 
-class BookmarksModel(BaseModel):
+class BookmarksModel(models.Model):
     is_bookmark = models.BooleanField(default=False)
 
