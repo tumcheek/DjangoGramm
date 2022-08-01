@@ -50,5 +50,7 @@ class TagModel(models.Model):
 
 
 class BookmarksModel(models.Model):
+    post = models.ForeignKey(PostModel, on_delete=models.CASCADE)
+    user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
     is_bookmark = models.BooleanField(default=False)
 
