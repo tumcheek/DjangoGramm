@@ -38,6 +38,8 @@ class PostModel(TimeStampMixin):
 
 
 class LikeModel(models.Model):
+    post = models.ForeignKey(PostModel, on_delete=models.CASCADE)
+    user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
     likes = models.IntegerField(default=0)
 
 
