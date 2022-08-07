@@ -11,8 +11,8 @@ class UserFactory(DjangoModelFactory):
     email = factory.Faker('email')
     first_name = factory.Faker('first_name')
     last_name = factory.Faker('last_name')
-    bio = factory.Faker('sentence', nb_words=30)
-    avatar_src = factory.Faker('sentence')
+    bio = factory.Faker('sentence', nb_words=5)
+    avatar_src = factory.Faker('url')
 
 
 class FollowerFollowingFactory(DjangoModelFactory):
@@ -23,6 +23,7 @@ class FollowerFollowingFactory(DjangoModelFactory):
 class MediaTypeFactory(DjangoModelFactory):
     class Meta:
         model = MediaTypeModel
+    name = factory.Faker('word')
 
 
 class MediaFactory(DjangoModelFactory):
@@ -30,7 +31,7 @@ class MediaFactory(DjangoModelFactory):
         model = MediaModel
 
     media_type = factory.SubFactory(MediaTypeFactory)
-    media_src = factory.Faker('sentence')
+    media_src = factory.Faker('url')
 
 
 class PostFactory(DjangoModelFactory):
@@ -47,13 +48,14 @@ class LikeFactory(DjangoModelFactory):
 
     post = factory.SubFactory(PostFactory)
     user = factory.SubFactory(UserFactory)
+    likes = factory.Faker('random_int')
 
 
 class TagFactory(DjangoModelFactory):
     class Meta:
         model = TagModel
 
-    name = factory.Faker('sentence', nb_words=15)
+    name = factory.Faker('sentence', nb_words=5)
 
 
 class BookmarksFactory(DjangoModelFactory):
