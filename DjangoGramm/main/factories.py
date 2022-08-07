@@ -62,4 +62,6 @@ class BookmarksFactory(DjangoModelFactory):
     class Meta:
         model = BookmarksModel
 
+    post = factory.SubFactory(PostFactory)
+    user = factory.SubFactory(UserFactory)
     is_bookmark = factory.Faker('pybool')
