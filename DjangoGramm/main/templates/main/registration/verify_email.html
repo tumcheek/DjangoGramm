@@ -1,0 +1,6 @@
+{% autoescape off %}
+Hi {{ user.get_username }},
+click to link to end registration
+http://{{ domain }}{% url 'main:verify_email' uidb64=uid token=token %}
+
+{% endautoescape %}
