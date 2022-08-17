@@ -42,7 +42,6 @@ class PostModel(TimeStampMixin):
 class LikeModel(models.Model):
     post = models.ForeignKey(PostModel, on_delete=models.CASCADE)
     user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
-    likes = models.IntegerField(default=0)
 
 
 class TagModel(models.Model):
@@ -54,5 +53,4 @@ class TagModel(models.Model):
 class BookmarksModel(models.Model):
     post = models.ForeignKey(PostModel, on_delete=models.CASCADE)
     user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
-    is_bookmark = models.BooleanField(default=False)
 
