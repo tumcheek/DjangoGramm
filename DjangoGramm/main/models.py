@@ -1,13 +1,15 @@
+from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 
-class UserModel(models.Model):
-    email = models.EmailField()
-    first_name = models.CharField(max_length=120)
-    last_name = models.CharField(max_length=120)
+class UserModel(AbstractUser):
+    email = models.EmailField(unique=True)
     bio = models.CharField(max_length=250)
     avatar_src = models.CharField(max_length=120)
-
+    is_verify = models.BooleanField(default=False)
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['usernames']
 
 class FollowerFollowingModel(models.Model):
     follower = models.ManyToManyField(UserModel, related_name='follower')
