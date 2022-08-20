@@ -1,12 +1,13 @@
 {% extends 'base.html' %}
 {% block content %}
-<form action="" method="post">
-    <label>Load your photo <input type="file"></label>
-    <p><label>First name <input type="text"></label></p>
-    <p><label>Last name <input type="text"></label></p>
+<form action="" method="post" enctype="multipart/form-data">
+    <label>Load your photo <input type="file"  name="avatar" accept=".png, .jpg, .jpeg"></label>
+    <p><label>First name <input type="text" name="first_name"></label></p>
+    <p><label>Last name <input type="text" name="last_name"></label></p>
     <p>Write some information about you</p>
-    <textarea></textarea>
-    <p><button type="submit">submit</button></p>
+    <textarea  name="bio"></textarea>
+    {% csrf_token %}
+    <p><button type="submit">submit</button> <a href="{% url 'main:profile' %}">Cancel</a></p>
 
 </form>
 
