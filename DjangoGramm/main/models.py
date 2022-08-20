@@ -6,10 +6,11 @@ from django.utils.translation import gettext_lazy as _
 class UserModel(AbstractUser):
     email = models.EmailField(unique=True)
     bio = models.CharField(max_length=250)
-    avatar_src = models.CharField(max_length=120)
+    avatar_src = models.ImageField(upload_to='avatars')
     is_verify = models.BooleanField(default=False)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['usernames']
+
 
 class FollowerFollowingModel(models.Model):
     follower = models.ManyToManyField(UserModel, related_name='follower')
@@ -30,7 +31,7 @@ class TimeStampMixin(models.Model):
 
 class MediaModel(TimeStampMixin):
     media_type = models.ForeignKey(MediaTypeModel, on_delete=models.CASCADE)
-    media_src = models.CharField(max_length=100)
+    media_src = models.ImageField(upload_to='post_media')
 
 
 class PostModel(TimeStampMixin):
