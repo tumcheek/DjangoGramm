@@ -15,6 +15,20 @@ from pathlib import Path
 User = get_user_model()
 
 
+class ProfileView(View):
+    template_name = 'main/profile.html'
+
+    def get(self, request):
+        if request.user.is_authenticated:
+            context = {
+                'user': request.user,
+                'src': Path(str(request.user.avatar_src))
+            }
+            return render(request, self.template_name, context)
+        else:
+            return HttpResponse('You must login!')
+
+
 class ProfileSettingView(View):
     template_name = 'main/registration/profile_settings.html'
 
