@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
-
+import os.path
 from pathlib import Path
 from dotenv import load_dotenv
 from os import getenv
@@ -34,7 +34,7 @@ ALLOWED_HOSTS = []
 AUTH_USER_MODEL = 'main.UserModel'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 
 # Application definition
 
@@ -63,7 +63,7 @@ ROOT_URLCONF = 'DjangoGramm.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'main' /'templates' / 'main'],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -136,9 +136,13 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # EMAIL
-
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = str(getenv('EMAIL'))
 EMAIL_HOST_PASSWORD = str(getenv('PASSWORD_EMAIL'))
 EMAIL_PORT = 587
+
+# MEDIA
+MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = '/media/'
