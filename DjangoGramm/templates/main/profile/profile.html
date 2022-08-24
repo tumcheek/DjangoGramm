@@ -1,0 +1,25 @@
+{% extends '../base.html' %}
+{% block content %}
+    <div class="user_information">
+        <p><img src="/media/{{ src }}" alt="avatar" width="200" height="200" > </p>
+        <p>{{ user.username }}</p>
+        <p>{{ user.first_name }} {{ user.last_name }}</p>
+        <p>{{ user.bio }}</p>
+        <p><a href="{% url 'main:profile_setting' %}">Settings</a></p>
+        <h2>Posts</h2>
+        {% for i , post in posts %}
+        <div class="post">
+            <p>{{ post.content }}</p>
+            <div class="post_img">
+                {% for media in post.medias.all %}
+                <img src="/media/{{ media.media_src }}" width="300" height="300" alt="">
+                {% endfor %}
+            </div>
+                {% for post_tag in all_tags %}
+            <span class="tags">{{ tag.name }}</span>
+                {% endfor %}
+        </div>
+
+        {% endfor %}
+    </div>
+{% endblock %}

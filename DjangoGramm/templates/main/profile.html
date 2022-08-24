@@ -1,9 +1,0 @@
-{% extends 'main/base.html' %}
-{% block content %}
-    <div class="user_information">
-        <p><img src="/media/{{ src }}" alt="avatar" width="200" height="200" > </p>
-        <p>{{ user.username }}</p>
-        <p>{{ user.first_name }} {{ user.last_name }}</p>
-        <p><a href="{% url 'main:profile_setting' %}">Settings</a></p>
-    </div>
-{% endblock %}
