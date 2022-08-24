@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 class UserModel(AbstractUser):
     email = models.EmailField(unique=True)
     bio = models.CharField(max_length=250)
-    avatar_src = models.ImageField(upload_to='avatars')
+    avatar_src = models.ImageField(upload_to='avatars', default='avatars/avatar.png')
     is_verify = models.BooleanField(default=False)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['usernames']
