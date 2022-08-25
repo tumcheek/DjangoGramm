@@ -5,6 +5,7 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.contrib.auth.tokens import default_token_generator as \
     token_generator
+from .models import TagModel
 
 
 def send_email_for_verify(request, user):
@@ -18,7 +19,7 @@ def send_email_for_verify(request, user):
 
     }
     message = render_to_string(
-        'registration/verify_email.html',
+        'main/registration/verify_email.html',
         context=context
     )
     email = EmailMessage(
@@ -27,3 +28,24 @@ def send_email_for_verify(request, user):
         to=[user.email]
     )
     email.send()
+
+
+def get_posts_list(posts_query):
+    posts = []
+
+    for post in posts_query:
+        post_info = []
+        all_post_media = []
+        all_post_tags = []
+        post_info.append(post.content)
+        for media in post.medias.all():
+            all_post_media.append(media.media_src)
+        post_info.append(all_post_media)
+        for tag in TagModel.objects.filter(post=post.pk):
+            all_post_tags.append(tag.name)
+        post_info.append(all_post_tags)
+        likes = post.likemodel_set.all().count()
+        post_info.append(likes)
+        posts.append(post_info)
+
+    return posts
