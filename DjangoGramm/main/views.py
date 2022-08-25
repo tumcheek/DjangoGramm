@@ -8,29 +8,39 @@ from django.contrib.auth import login, authenticate, get_user_model, logout
 from .forms import SignupForm
 from django.contrib.auth.tokens import default_token_generator as \
     token_generator
-from .utils import send_email_for_verify
+from .utils import send_email_for_verify, get_posts_list
 from django.core.files.storage import FileSystemStorage
 from pathlib import Path
+from .models import *
+from django.contrib.auth.views import LoginView as Login
 
 User = get_user_model()
 
 
 class ProfileView(View):
-    template_name = 'main/profile.html'
+    template_name = 'main/profile/profile.html'
 
     def get(self, request):
+        try:
+            if not request.user.is_verify:
+                return redirect('main:confirm_error')
+        except AttributeError:
+            return redirect('main:login')
         if request.user.is_authenticated:
+            user = request.user
+            posts = get_posts_list(user.postmodel_set.all())
             context = {
-                'user': request.user,
-                'src': Path(str(request.user.avatar_src))
+                'user': user,
+                'avatar_src': Path(str(user.avatar_src)),
+                'posts': posts,
             }
             return render(request, self.template_name, context)
-        else:
-            return HttpResponse('You must login!')
+
+        return redirect('main:login')
 
 
 class ProfileSettingView(View):
-    template_name = 'main/registration/profile_settings.html'
+    template_name = 'main/profile/profile_settings.html'
 
     def get(self, request):
         if request.user.is_authenticated:
@@ -42,7 +52,8 @@ class ProfileSettingView(View):
         form = request.POST
         uploaded_avatar = request.FILES.get('avatar')
         user = request.user
-        user.avatar_src = uploaded_avatar
+        if uploaded_avatar:
+            user.avatar_src = uploaded_avatar
         user.first_name = form['first_name']
         user.last_name = form['last_name']
         user.bio = form['bio']
@@ -94,4 +105,8 @@ class RegistrationView(View):
             user = authenticate(email=email, password=password)
             send_email_for_verify(request, user)
             return redirect('main:confirm_email')
+        context = {
+            'form': form
+        }
 
+        return render(request, self.template_name, context)
