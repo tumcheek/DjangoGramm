@@ -32,8 +32,8 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 AUTH_USER_MODEL = 'main.UserModel'
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/djangogramm/profile/'
+LOGOUT_REDIRECT_URL = '/djangogramm/login/'
 
 
 # Application definition
