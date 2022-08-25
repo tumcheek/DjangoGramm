@@ -7,12 +7,12 @@ from .models import UserModel, MediaTypeModel, FollowerFollowingModel, MediaMode
 class UserFactory(DjangoModelFactory):
     class Meta:
         model = UserModel
-
+    username = factory.Faker('user_name')
     email = factory.Faker('email')
     first_name = factory.Faker('first_name')
     last_name = factory.Faker('last_name')
     bio = factory.Faker('sentence', nb_words=5)
-    avatar_src = factory.Faker('url')
+    is_verify = factory.Faker('pybool')
 
 
 class FollowerFollowingFactory(DjangoModelFactory):
@@ -31,7 +31,7 @@ class MediaFactory(DjangoModelFactory):
         model = MediaModel
 
     media_type = factory.SubFactory(MediaTypeFactory)
-    media_src = factory.Faker('url')
+    media_src = factory.django.ImageField()
 
 
 class PostFactory(DjangoModelFactory):
@@ -48,7 +48,6 @@ class LikeFactory(DjangoModelFactory):
 
     post = factory.SubFactory(PostFactory)
     user = factory.SubFactory(UserFactory)
-    likes = factory.Faker('random_int')
 
 
 class TagFactory(DjangoModelFactory):
@@ -64,4 +63,3 @@ class BookmarksFactory(DjangoModelFactory):
 
     post = factory.SubFactory(PostFactory)
     user = factory.SubFactory(UserFactory)
-    is_bookmark = factory.Faker('pybool')
