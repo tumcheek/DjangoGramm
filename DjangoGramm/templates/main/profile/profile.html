@@ -1,23 +1,24 @@
 {% extends '../base.html' %}
 {% block content %}
     <div class="user_information">
-        <p><img src="/media/{{ src }}" alt="avatar" width="200" height="200" > </p>
+        <p><img src="/media/{{ avatar_src }}" alt="avatar" width="200" height="200"></p>
         <p>{{ user.username }}</p>
         <p>{{ user.first_name }} {{ user.last_name }}</p>
         <p>{{ user.bio }}</p>
-        <p><a href="{% url 'main:profile_setting' %}">Settings</a></p>
+        <p><a href="{% url 'main:profile_setting' %}">Settings</a>  <a href="{% url 'main:logout' %}">Logout</a></p>
         <h2>Posts</h2>
-        {% for i , post in posts %}
+        {% for post in posts %}
         <div class="post">
-            <p>{{ post.content }}</p>
+            <p>{{ post.0 }}</p>
             <div class="post_img">
-                {% for media in post.medias.all %}
-                <img src="/media/{{ media.media_src }}" width="300" height="300" alt="">
+                {% for media in post.1 %}
+                <img src="/media/{{ media }}" width="300" height="300" alt="">
                 {% endfor %}
             </div>
-                {% for post_tag in all_tags %}
-            <span class="tags">{{ tag.name }}</span>
+                {% for post_tag in post.2 %}
+            <span class="tags">{{ post_tag }}</span>
                 {% endfor %}
+            <p>Likese {{ post.3 }}</p>
         </div>
 
         {% endfor %}
