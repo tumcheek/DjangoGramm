@@ -61,6 +61,10 @@ class ProfileSettingView(View):
         return redirect('main:profile')
 
 
+class LoginView(Login):
+    template_name = 'main/registration/login.html'
+    redirect_authenticated_user = True
+
 class EmailVerifyView(View):
     def get(self, request, uidb64, token):
         user = self.get_user(uidb64)
