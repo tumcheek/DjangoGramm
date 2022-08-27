@@ -49,7 +49,8 @@ class ProfileSettingView(View):
         else:
             return HttpResponse('You must login!')
 
-    def post(self, request):
+    @staticmethod
+    def post(request):
         form = request.POST
         uploaded_avatar = request.FILES.get('avatar')
         user = request.user
@@ -119,7 +120,8 @@ class RegistrationView(View):
 
 
 class LikeView(View):
-    def post(self, request, pk):
+    @staticmethod
+    def post(request, pk):
         post = get_object_or_404(PostModel, id=pk)
 
         if post.likemodel_set.filter(user_id=request.user.pk):
@@ -131,7 +133,8 @@ class LikeView(View):
 
 
 class BookmarkView(View):
-    def post(self, request, pk):
+    @staticmethod
+    def post(request, pk):
         post = get_object_or_404(PostModel, id=pk)
         if post.bookmarksmodel_set.filter(user_id=request.user.pk):
             post.bookmarksmodel_set.filter(user_id=request.user.pk).delete()
@@ -141,5 +144,25 @@ class BookmarkView(View):
         return redirect('main:profile')
 
 
+class NewPostView(View):
+    @staticmethod
+    def post(request):
+        form = request.POST
+        upload_media = request.FILES.getlist('media')
+        user = request.user
+        new_post = PostModel(user=user, content=form['content'])
+        new_post.save()
+        for media in upload_media:
+            post_media = MediaModel(media_src=media, media_type_id=133)
+            post_media.save()
+            new_post.medias.add(post_media)
+            new_post.save()
+        post_tag = TagModel(name=form['tags'])
+        post_tag.save()
+        post_tag.user.add(user)
+        post_tag.post.add(new_post)
+        post_tag.save()
+
+        return redirect('main:profile')
 
 
