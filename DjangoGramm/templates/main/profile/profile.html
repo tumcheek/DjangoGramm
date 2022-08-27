@@ -6,6 +6,23 @@
         <p>{{ user.first_name }} {{ user.last_name }}</p>
         <p>{{ user.bio }}</p>
         <p><a href="{% url 'main:profile_setting' %}">Settings</a>  <a href="{% url 'main:logout' %}">Logout</a></p>
+
+        <h2>Add new post</h2>
+        <form action="{% url 'main:new_post' %}" method="post" enctype="multipart/form-data">
+            <label>Load post photo <input type="file"  name="media" accept=".png, .jpg, .jpeg" required multiple></label>
+            <p>
+                <label>Add describe for post
+                    <textarea name="content"></textarea>
+                </label>
+            </p>
+            <p>
+                <label>Add tags for post
+                    <textarea name="tags"></textarea>
+                </label>
+            </p>
+            {% csrf_token %}
+            <p><button type="submit">add post</button></p>
+        </form>
         <h2>Posts</h2>
         {% for post in posts %}
         <div class="post">
@@ -18,7 +35,22 @@
                 {% for post_tag in post.2 %}
             <span class="tags">{{ post_tag }}</span>
                 {% endfor %}
-            <p>Likese {{ post.3 }}</p>
+            <form action="{% url 'main:like_post' post.4 %}" method="post">
+                    {% csrf_token %}
+                {% if post.5 %}
+                    <p><button type="submit">Unlike</button> {{ post.3 }} Likes</p>
+                {% else %}
+                    <p><button type="submit">Like</button> {{ post.3 }} Likes</p>
+                {% endif %}
+            </form>
+            <form action="{% url 'main:bookmark_post' post.4 %}" method="post">
+                    {% csrf_token %}
+                {% if post.6 %}
+                    <p><button type="submit">Bookmark</button> </p>
+                {% else %}
+                    <p><button type="submit">Remove bookmark</button> </p>
+                {% endif %}
+            </form>
         </div>
 
         {% endfor %}
