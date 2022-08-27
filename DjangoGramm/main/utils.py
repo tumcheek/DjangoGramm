@@ -30,7 +30,7 @@ def send_email_for_verify(request, user):
     email.send()
 
 
-def get_posts_list(posts_query):
+def get_posts_list(posts_query, request):
     posts = []
 
     for post in posts_query:
@@ -46,6 +46,11 @@ def get_posts_list(posts_query):
         post_info.append(all_post_tags)
         likes = post.likemodel_set.all().count()
         post_info.append(likes)
+        post_info.append(post.pk)
+        is_liked = True if post.likemodel_set.filter(user_id=request.user.pk) else False
+        post_info.append(is_liked)
+        is_bookmark = False if post.bookmarksmodel_set.filter(user_id=request.user.pk) else True
+        post_info.append(is_bookmark)
         posts.append(post_info)
 
     return posts
