@@ -130,4 +130,16 @@ class LikeView(View):
         return redirect('main:profile')
 
 
+class BookmarkView(View):
+    def post(self, request, pk):
+        post = get_object_or_404(PostModel, id=pk)
+        if post.bookmarksmodel_set.filter(user_id=request.user.pk):
+            post.bookmarksmodel_set.filter(user_id=request.user.pk).delete()
+        else:
+            post_bookmark = BookmarksModel(post=post, user=request.user)
+            post_bookmark.save()
+        return redirect('main:profile')
+
+
+
 
