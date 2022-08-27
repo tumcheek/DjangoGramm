@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from django.urls import reverse
 from django.utils.http import urlsafe_base64_decode
 from django.views import generic, View
 from django.http import HttpResponse
@@ -28,7 +29,7 @@ class ProfileView(View):
             return redirect('main:login')
         if request.user.is_authenticated:
             user = request.user
-            posts = get_posts_list(user.postmodel_set.all())
+            posts = get_posts_list(user.postmodel_set.all().order_by('-created_at'), request)
             context = {
                 'user': user,
                 'avatar_src': Path(str(user.avatar_src)),
@@ -64,6 +65,7 @@ class ProfileSettingView(View):
 class LoginView(Login):
     template_name = 'main/registration/login.html'
     redirect_authenticated_user = True
+
 
 class EmailVerifyView(View):
     def get(self, request, uidb64, token):
@@ -114,3 +116,18 @@ class RegistrationView(View):
         }
 
         return render(request, self.template_name, context)
+
+
+class LikeView(View):
+    def post(self, request, pk):
+        post = get_object_or_404(PostModel, id=pk)
+
+        if post.likemodel_set.filter(user_id=request.user.pk):
+            post.likemodel_set.filter(user_id=request.user.pk).delete()
+        else:
+            post_like = LikeModel(post=post, user=request.user)
+            post_like.save()
+        return redirect('main:profile')
+
+
+
