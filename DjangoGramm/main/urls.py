@@ -22,5 +22,6 @@ urlpatterns = [
     path('like/<int:pk>', views.LikeView.as_view(), name='like_post'),
     path('bookmark/<int:pk>', views.BookmarkView.as_view(), name='bookmark_post'),
     path('new_post/', views.NewPostView.as_view(), name='new_post'),
+    path('feed/', views.FeedView.as_view(), name='feed')
 ]
 
