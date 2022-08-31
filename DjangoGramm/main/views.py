@@ -9,7 +9,7 @@ from django.contrib.auth import login, authenticate, get_user_model, logout
 from .forms import SignupForm
 from django.contrib.auth.tokens import default_token_generator as \
     token_generator
-from .utils import send_email_for_verify, get_posts_list, get_all_posts_info, get_post_info
+from .utils import send_email_for_verify, get_posts_list, get_post_info, get_user_posts_info
 from django.core.files.storage import FileSystemStorage
 from pathlib import Path
 from .models import *
@@ -18,28 +18,35 @@ from django.contrib.auth.views import LoginView as Login
 User = get_user_model()
 
 
+def login_redirect(request):
+    username = request.user.username
+    return redirect(reverse('main:profile', kwargs={'username': username}))
+
+
 class ProfileView(View):
     template_name = 'main/profile/profile.html'
 
-    def get(self, request):
+    def get(self, request, username):
         try:
             if not request.user.is_verify:
                 return redirect('main:confirm_error')
         except AttributeError:
             return redirect('main:login')
         if request.user.is_authenticated:
-            user = request.user
+            login_user_username = request.user.username
+            user = request.user if username == login_user_username else User.objects.get(username=username)
             followers_count = user.followers.all().count()
             following_count = user.following.all().count()
-            posts = get_posts_list(user.postmodel_set.all().order_by('-created_at'), user)
-
+            posts = get_user_posts_info(user.postmodel_set.all().order_by('-created_at'), request.user, user)
+            is_my_profile = True if username == login_user_username else False
             context = {
                 'user': user,
                 'avatar_src': Path(str(user.avatar_src)),
                 'followers_count': followers_count,
                 'following_count': following_count,
                 'posts': posts,
-                'is_my_profile': True
+                'is_my_profile': is_my_profile,
+                'login_user_username': login_user_username
 
             }
             return render(request, self.template_name, context)
@@ -52,9 +59,12 @@ class ProfileSettingView(View):
 
     def get(self, request):
         if request.user.is_authenticated:
-            return render(request, self.template_name)
-        else:
-            return HttpResponse('You must login!')
+            context = {
+                'username': request.user.username
+            }
+            return render(request, self.template_name, context)
+
+        return redirect('main:login')
 
     @staticmethod
     def post(request):
@@ -67,7 +77,7 @@ class ProfileSettingView(View):
         user.last_name = form['last_name']
         user.bio = form['bio']
         user.save()
-        return redirect('main:profile')
+        return redirect(reverse('main:profile', kwargs={'username': request.user.username}))
 
 
 class LoginView(Login):
@@ -136,7 +146,8 @@ class LikeView(View):
         else:
             post_like = LikeModel(post=post, user=request.user)
             post_like.save()
-        return redirect('main:profile')
+
+        return redirect(reverse('main:profile', kwargs={'username': User.objects.get(postmodel=pk).username}))
 
 
 class BookmarkView(View):
@@ -148,7 +159,7 @@ class BookmarkView(View):
         else:
             post_bookmark = BookmarksModel(post=post, user=request.user)
             post_bookmark.save()
-        return redirect('main:profile')
+        return redirect(reverse('main:profile', kwargs={'username': User.objects.get(postmodel=pk).username}))
 
 
 class NewPostView(View):
@@ -170,24 +181,29 @@ class NewPostView(View):
         post_tag.post.add(new_post)
         post_tag.save()
 
-        return redirect('main:profile')
+        return redirect(reverse('main:profile', kwargs={'username': request.user.username}))
 
 
 class FeedView(View):
     template_name = 'main/profile/feed.html'
 
     def get(self, request):
-        user = request.user
-        all_following = user.following.all()
-        posts = []
+        if request.user.is_authenticated:
+            user = request.user
+            all_following = user.following.all()
+            posts = []
 
-        for following in all_following:
-            user_posts = PostModel.objects\
-                .filter(user_id=following.followers_id)\
-                .order_by('-created_at')
-            for user_post in user_posts:
-                posts.append(get_post_info(user_post, user, User.objects.get(pk=following.followers_id)))
-        context = {
-            'posts': sorted(posts, key=lambda x: x['created_at'], reverse=True)
-        }
-        return render(request, self.template_name, context)
+            for following in all_following:
+                user_posts = PostModel.objects\
+                    .filter(user_id=following.followers_id)\
+                    .order_by('-created_at')
+                for user_post in user_posts:
+                    posts.append(get_post_info(user_post, user, User.objects.get(pk=following.followers_id)))
+            context = {
+                'user': request.user.username,
+                'posts': sorted(posts, key=lambda x: x['created_at'], reverse=True)
+            }
+            return render(request, self.template_name, context)
+        return redirect('main:login')
+
+
