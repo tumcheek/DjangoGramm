@@ -13,8 +13,8 @@ class UserModel(AbstractUser):
 
 
 class FollowerFollowingModel(models.Model):
-    follower = models.ManyToManyField(UserModel, related_name='follower')
-    following = models.ManyToManyField(UserModel, related_name='following')
+    followers = models.ForeignKey(UserModel, on_delete=models.CASCADE, related_name='followers')
+    following = models.ForeignKey(UserModel, on_delete=models.CASCADE, related_name='following')
 
 
 class MediaTypeModel(models.Model):
