@@ -22,7 +22,8 @@ urlpatterns = [
     path('new_post/', views.NewPostView.as_view(), name='new_post'),
     path('settings/', views.ProfileSettingView.as_view(), name='profile_setting'),
     path('<str:username>/', views.ProfileView.as_view(), name='profile'),
-    path('<str:username>/<str:followers_following>/', views.FollowersFollowingView.as_view(), name='followers_following'),
+    path('<str:username>/<str:followers_following>/', views.FollowersFollowingView.as_view(),
+         name='followers_following'),
     path('like/<int:pk>', views.LikeView.as_view(), name='like_post'),
     path('bookmark/<int:pk>', views.BookmarkView.as_view(), name='bookmark_post'),
 
