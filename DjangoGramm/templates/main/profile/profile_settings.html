@@ -7,7 +7,7 @@
     <p>Write some information about you</p>
     <textarea  name="bio"></textarea>
     {% csrf_token %}
-    <p><button type="submit">submit</button> <a href="{% url 'main:profile' %}">Cancel</a></p>
+    <p><button type="submit">submit</button> <a href="{% url 'main:profile' username %}">Cancel</a></p>
 
 </form>
 

@@ -1,7 +1,7 @@
 {% extends '../base.html' %}
 {% block content %}
 
-<p><a href="{% url 'main:profile' %}">My profile</a></p>
+<p><a href="{% url 'main:profile' user %}">My profile</a></p>
 {% for post in posts %}
     <div class="post">
         <div class="post_creator_info">

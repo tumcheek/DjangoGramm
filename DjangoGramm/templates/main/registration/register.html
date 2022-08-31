@@ -4,5 +4,6 @@
         {{form}}
         {% csrf_token %}
         <button type="submit" class="btn btn-success">submit</button>
+        <p>Have an account? <a href="{% url 'main:login' %}">Log in</a></p>
     </form>
 {% endblock %}
