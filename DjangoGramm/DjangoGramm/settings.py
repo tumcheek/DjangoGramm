@@ -32,7 +32,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 AUTH_USER_MODEL = 'main.UserModel'
-LOGIN_REDIRECT_URL = '/djangogramm/profile/'
+LOGIN_REDIRECT_URL = '/djangogramm/login-redirect/'
 LOGOUT_REDIRECT_URL = '/djangogramm/login/'
 
 
