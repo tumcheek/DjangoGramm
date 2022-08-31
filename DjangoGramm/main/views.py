@@ -171,7 +171,8 @@ class NewPostView(View):
         new_post = PostModel(user=user, content=form['content'])
         new_post.save()
         for media in upload_media:
-            post_media = MediaModel(media_src=media, media_type_id=550)
+            media_type = MediaTypeModel.objects.get(name=media.content_type[media.content_type.find('/') + 1:])
+            post_media = MediaModel(media_src=media, media_type_id=media_type.pk)
             post_media.save()
             new_post.medias.add(post_media)
             new_post.save()
