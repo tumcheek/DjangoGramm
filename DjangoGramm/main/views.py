@@ -207,3 +207,27 @@ class FeedView(View):
         return redirect('main:login')
 
 
+class FollowersFollowingView(View):
+    template_name = 'main/profile/follower_following.html'
+
+    def get(self, request, username, followers_following):
+        if request.user.is_authenticated:
+            current_user_page = User.objects.get(username=username)
+            login_user_username = request.user.username
+            user_list = []
+            if followers_following == 'followers':
+                user_follower_following = current_user_page.followers.all()
+                for user in user_follower_following:
+                    user_list.append(User.objects.get(pk=user.following_id))
+            else:
+                user_follower_following = current_user_page.following.all()
+                for user in user_follower_following:
+                    user_list.append(User.objects.get(pk=user.followers_id))
+
+            context = {
+                'user_list': user_list,
+                'follower_following': followers_following,
+                'login_user_username': login_user_username
+            }
+            return render(request, self.template_name, context)
+        return redirect('main:login')
