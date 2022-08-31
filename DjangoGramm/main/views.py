@@ -3,13 +3,13 @@ from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.utils.http import urlsafe_base64_decode
 from django.views import generic, View
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, get_user_model, logout
 from .forms import SignupForm
 from django.contrib.auth.tokens import default_token_generator as \
     token_generator
-from .utils import send_email_for_verify, get_posts_list
+from .utils import send_email_for_verify, get_posts_list, get_all_posts_info, get_post_info
 from django.core.files.storage import FileSystemStorage
 from pathlib import Path
 from .models import *
@@ -29,11 +29,18 @@ class ProfileView(View):
             return redirect('main:login')
         if request.user.is_authenticated:
             user = request.user
-            posts = get_posts_list(user.postmodel_set.all().order_by('-created_at'), request)
+            followers_count = user.followers.all().count()
+            following_count = user.following.all().count()
+            posts = get_posts_list(user.postmodel_set.all().order_by('-created_at'), user)
+
             context = {
                 'user': user,
                 'avatar_src': Path(str(user.avatar_src)),
+                'followers_count': followers_count,
+                'following_count': following_count,
                 'posts': posts,
+                'is_my_profile': True
+
             }
             return render(request, self.template_name, context)
 
@@ -153,7 +160,7 @@ class NewPostView(View):
         new_post = PostModel(user=user, content=form['content'])
         new_post.save()
         for media in upload_media:
-            post_media = MediaModel(media_src=media, media_type_id=133)
+            post_media = MediaModel(media_src=media, media_type_id=550)
             post_media.save()
             new_post.medias.add(post_media)
             new_post.save()
@@ -166,3 +173,21 @@ class NewPostView(View):
         return redirect('main:profile')
 
 
+class FeedView(View):
+    template_name = 'main/profile/feed.html'
+
+    def get(self, request):
+        user = request.user
+        all_following = user.following.all()
+        posts = []
+
+        for following in all_following:
+            user_posts = PostModel.objects\
+                .filter(user_id=following.followers_id)\
+                .order_by('-created_at')
+            for user_post in user_posts:
+                posts.append(get_post_info(user_post, user, User.objects.get(pk=following.followers_id)))
+        context = {
+            'posts': sorted(posts, key=lambda x: x['created_at'], reverse=True)
+        }
+        return render(request, self.template_name, context)
