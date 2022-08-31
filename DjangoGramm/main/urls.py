@@ -9,6 +9,7 @@ from . import views
 app_name = 'main'
 
 urlpatterns = [
+    path('login-redirect/', views.login_redirect, name='login_redirect'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('login/', views.LoginView.as_view(), name='login'),
     path('confirm_email/', TemplateView.as_view(template_name='main/registration/confirm_email.html'),
@@ -17,11 +18,14 @@ urlpatterns = [
     path('confirm_email/error/', TemplateView.as_view(template_name='main/registration/confirm_error.html'),
          name='confirm_error'),
     path('registration/', views.RegistrationView.as_view(), name='register'),
-    path('profile/settings/', views.ProfileSettingView.as_view(), name='profile_setting'),
-    path('profile/', views.ProfileView.as_view(), name='profile'),
+    path('feed/', views.FeedView.as_view(), name='feed'),
+    path('new_post/', views.NewPostView.as_view(), name='new_post'),
+    path('settings/', views.ProfileSettingView.as_view(), name='profile_setting'),
+    path('<str:username>/', views.ProfileView.as_view(), name='profile'),
+    path('<str:username>/<str:followers_following>/', views.FollowersFollowinView.as_view(), name='followers_following'),
     path('like/<int:pk>', views.LikeView.as_view(), name='like_post'),
     path('bookmark/<int:pk>', views.BookmarkView.as_view(), name='bookmark_post'),
-    path('new_post/', views.NewPostView.as_view(), name='new_post'),
-    path('feed/', views.FeedView.as_view(), name='feed')
+
+
 ]
 
