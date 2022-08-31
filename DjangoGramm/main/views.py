@@ -9,7 +9,7 @@ from django.contrib.auth import login, authenticate, get_user_model, logout
 from .forms import SignupForm
 from django.contrib.auth.tokens import default_token_generator as \
     token_generator
-from .utils import send_email_for_verify, get_posts_list, get_post_info, get_user_posts_info
+from .utils import send_email_for_verify, get_post_info, get_user_posts_info
 from django.core.files.storage import FileSystemStorage
 from pathlib import Path
 from .models import *
