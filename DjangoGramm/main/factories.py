@@ -20,6 +20,9 @@ class FollowerFollowingFactory(DjangoModelFactory):
     class Meta:
         model = FollowerFollowingModel
 
+    followers = factory.SubFactory(UserFactory)
+    following = factory.SubFactory(UserFactory)
+
 
 class MediaTypeFactory(DjangoModelFactory):
     class Meta:
