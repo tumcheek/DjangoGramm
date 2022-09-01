@@ -5,7 +5,10 @@
 {% for post in posts %}
     <div class="post">
         <div class="post_creator_info">
-            <p><img src="/media/{{ post.post_creator_avatar }}" width="50" height="50" alt=""> {{ post.post_creator }}</p>
+            <p>
+                <img src="/media/{{ post.post_creator_avatar }}" width="50" height="50" alt="">
+                <a href="{% url 'main:profile' post.post_creator %}">{{ post.post_creator }}</a>
+            </p>
 
         </div>
             <p>{{ post.post_content }}</p>
@@ -16,10 +19,11 @@
                 {% endfor %}
             </div>
                 {% for post_tag in post.tags %}
-            <span class="tags">{{ post_tag }}</span>
+            <span class="tags">#{{ post_tag }}</span>
                 {% endfor %}
             <form action="{% url 'main:like_post' post.post_pk %}" method="post">
                     {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}">
                 {% if post.is_liked %}
                     <p><button type="submit">Unlike</button> {{ post.likes }} Likes</p>
                 {% else %}
@@ -28,6 +32,7 @@
             </form>
             <form action="{% url 'main:bookmark_post' post.post_pk %}" method="post">
                     {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}">
                 {% if post.is_bookmark %}
                     <p><button type="submit">Bookmark</button> </p>
                 {% else %}
