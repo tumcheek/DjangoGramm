@@ -58,7 +58,7 @@ class TagFactory(DjangoModelFactory):
     class Meta:
         model = TagModel
 
-    name = factory.Faker('sentence', nb_words=5)
+    name = factory.Faker('word')
 
 
 class BookmarksFactory(DjangoModelFactory):
