@@ -9,6 +9,7 @@ from . import views
 app_name = 'main'
 
 urlpatterns = [
+    path('new_tags/<int:pk>/', views.add_new_tags, name='new_tags'),
     path('login-redirect/', views.login_redirect, name='login_redirect'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('login/', views.LoginView.as_view(), name='login'),
