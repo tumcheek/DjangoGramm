@@ -38,6 +38,8 @@ class ProfileView(View):
             following_count = user.following.all().count()
             posts = get_user_posts_info(user.postmodel_set.all().order_by('-created_at'), request.user, user)
             is_my_profile = True if username == login_user_username else False
+            is_follow = True if FollowerFollowingModel.objects\
+                .filter(followers=User.objects.get(username=username), following=request.user) else False
             context = {
                 'user': user,
                 'avatar_src': Path(str(user.avatar_src)),
@@ -45,7 +47,8 @@ class ProfileView(View):
                 'following_count': following_count,
                 'posts': posts,
                 'is_my_profile': is_my_profile,
-                'login_user_username': login_user_username
+                'login_user_username': login_user_username,
+                'is_follow': is_follow
 
             }
             return render(request, self.template_name, context)
@@ -238,3 +241,14 @@ def add_new_tags(request, pk):
         post = PostModel.objects.get(pk=pk)
         add_tags_post(tag_list, request.user, post)
         return redirect(reverse('main:profile', kwargs={'username': request.user.username}))
+
+
+def follow_user(request, username):
+    if request.method == "POST":
+        if request.user.following.filter(followers_id=User.objects.get(username=username).pk):
+            request.user.following.filter(followers_id=User.objects.get(username=username).pk).delete()
+        else:
+            pass
+            FollowerFollowingModel.objects.create(followers=User.objects.get(username=username), following=request.user)
+        return redirect(reverse('main:profile', kwargs={'username': username}))
+
