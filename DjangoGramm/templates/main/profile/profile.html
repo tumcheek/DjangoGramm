@@ -41,11 +41,21 @@
                 <img src="/media/{{ media }}" width="300" height="300" alt="">
                 {% endfor %}
             </div>
-                {% for post_tag in post.tags %}
-            <span class="tags">{{ post_tag }}</span>
+            {% for post_tag in post.tags %}
+
+            <span class="tags">#{{ post_tag }}</span>
                 {% endfor %}
+            {% if is_my_profile %}
+            <form action="{% url 'main:new_tags' post.post_pk %}" method="post">
+                {% csrf_token %}
+                <input type="text" name="tags">
+                <button>Add new tags</button>
+            </form>
+            {% endif %}
+
             <form action="{% url 'main:like_post' post.post_pk %}" method="post">
                     {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}">
                 {% if post.is_liked %}
                     <p><button type="submit">Unlike</button> {{ post.likes }} Likes</p>
                 {% else %}
@@ -54,6 +64,7 @@
             </form>
             <form action="{% url 'main:bookmark_post' post.post_pk %}" method="post">
                     {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}">
                 {% if post.is_bookmark %}
                     <p><button type="submit">Bookmark</button> </p>
                 {% else %}
