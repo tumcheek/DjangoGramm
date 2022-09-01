@@ -16,6 +16,11 @@ class FollowerFollowingModel(models.Model):
     followers = models.ForeignKey(UserModel, on_delete=models.CASCADE, related_name='followers')
     following = models.ForeignKey(UserModel, on_delete=models.CASCADE, related_name='following')
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['followers', 'following'],  name="unique_followers")
+        ]
+
 
 class MediaTypeModel(models.Model):
     name = models.CharField(max_length=10)
