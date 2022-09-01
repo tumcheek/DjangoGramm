@@ -17,7 +17,7 @@ from django.contrib.auth.views import LoginView as Login
 User = get_user_model()
 
 
-def login_redirect(request):
+def login_redirect_view(request):
     username = request.user.username
     return redirect(reverse('main:profile', kwargs={'username': username}))
 
@@ -235,7 +235,7 @@ class FollowersFollowingView(View):
         return redirect('main:login')
 
 
-def add_new_tags(request, pk):
+def add_new_tags_view(request, pk):
     if request.method == "POST":
         tag_list = request.POST['tags'].split()
         post = PostModel.objects.get(pk=pk)
@@ -243,7 +243,7 @@ def add_new_tags(request, pk):
         return redirect(reverse('main:profile', kwargs={'username': request.user.username}))
 
 
-def follow_user(request, username):
+def follow_user_view(request, username):
     if request.method == "POST":
         if request.user.following.filter(followers_id=User.objects.get(username=username).pk):
             request.user.following.filter(followers_id=User.objects.get(username=username).pk).delete()

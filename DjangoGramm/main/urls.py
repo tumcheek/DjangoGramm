@@ -9,8 +9,8 @@ from . import views
 app_name = 'main'
 
 urlpatterns = [
-    path('new_tags/<int:pk>/', views.add_new_tags, name='new_tags'),
-    path('login-redirect/', views.login_redirect, name='login_redirect'),
+    path('new_tags/<int:pk>/', views.add_new_tags_view, name='new_tags'),
+    path('login-redirect/', views.login_redirect_view, name='login_redirect'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('login/', views.LoginView.as_view(), name='login'),
     path('confirm_email/', TemplateView.as_view(template_name='main/registration/confirm_email.html'),
@@ -23,7 +23,7 @@ urlpatterns = [
     path('new_post/', views.NewPostView.as_view(), name='new_post'),
     path('settings/', views.ProfileSettingView.as_view(), name='profile_setting'),
     path('<str:username>/', views.ProfileView.as_view(), name='profile'),
-    path('<str:username>/follow', views.follow_user, name='follow_user'),
+    path('<str:username>/follow', views.follow_user_view(), name='follow_user'),
     path('<str:username>/<str:followers_following>/', views.FollowersFollowingView.as_view(),
          name='followers_following'),
     path('like/<int:pk>', views.LikeView.as_view(), name='like_post'),
