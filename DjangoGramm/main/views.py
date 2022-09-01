@@ -3,14 +3,13 @@ from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.utils.http import urlsafe_base64_decode
 from django.views import generic, View
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, get_user_model, logout
 from .forms import SignupForm
 from django.contrib.auth.tokens import default_token_generator as \
     token_generator
-from .utils import send_email_for_verify, get_post_info, get_user_posts_info
-from django.core.files.storage import FileSystemStorage
+from .utils import send_email_for_verify, get_post_info, get_user_posts_info, add_tags_post
 from pathlib import Path
 from .models import *
 from django.contrib.auth.views import LoginView as Login
@@ -140,6 +139,7 @@ class LikeView(View):
     @staticmethod
     def post(request, pk):
         post = get_object_or_404(PostModel, id=pk)
+        previous_page = request.POST.get('next', '/')
 
         if post.likemodel_set.filter(user_id=request.user.pk):
             post.likemodel_set.filter(user_id=request.user.pk).delete()
@@ -147,19 +147,20 @@ class LikeView(View):
             post_like = LikeModel(post=post, user=request.user)
             post_like.save()
 
-        return redirect(reverse('main:profile', kwargs={'username': User.objects.get(postmodel=pk).username}))
+        return HttpResponseRedirect(previous_page)
 
 
 class BookmarkView(View):
     @staticmethod
     def post(request, pk):
         post = get_object_or_404(PostModel, id=pk)
+        previous_page = request.POST.get('next', '/')
         if post.bookmarksmodel_set.filter(user_id=request.user.pk):
             post.bookmarksmodel_set.filter(user_id=request.user.pk).delete()
         else:
             post_bookmark = BookmarksModel(post=post, user=request.user)
             post_bookmark.save()
-        return redirect(reverse('main:profile', kwargs={'username': User.objects.get(postmodel=pk).username}))
+        return HttpResponseRedirect(previous_page)
 
 
 class NewPostView(View):
@@ -176,11 +177,8 @@ class NewPostView(View):
             post_media.save()
             new_post.medias.add(post_media)
             new_post.save()
-        post_tag = TagModel(name=form['tags'])
-        post_tag.save()
-        post_tag.user.add(user)
-        post_tag.post.add(new_post)
-        post_tag.save()
+        post_tags_list = form['tags'].split()
+        add_tags_post(post_tags_list, user, new_post)
 
         return redirect(reverse('main:profile', kwargs={'username': request.user.username}))
 
@@ -232,3 +230,11 @@ class FollowersFollowingView(View):
             }
             return render(request, self.template_name, context)
         return redirect('main:login')
+
+
+def add_new_tags(request, pk):
+    if request.method == "POST":
+        tag_list = request.POST['tags'].split()
+        post = PostModel.objects.get(pk=pk)
+        add_tags_post(tag_list, request.user, post)
+        return redirect(reverse('main:profile', kwargs={'username': request.user.username}))
