@@ -1,4 +1,5 @@
 {% extends '../base.html' %}
+{% block title%} {{ follower_following }}  {% endblock %}
 {% block content %}
 <p><a href="{% url 'main:profile' login_user_username %}">My profile</a></p>
 {% if user_list %}
