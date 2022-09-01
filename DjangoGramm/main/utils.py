@@ -58,6 +58,7 @@ def get_user_posts_info(posts_query, user, post_creator):
 
     return posts
 
+
 def get_post_info(post, user, post_creator):
     all_post_media = []
     all_post_tags = []
@@ -80,3 +81,12 @@ def get_post_info(post, user, post_creator):
     }
 
     return post_info
+
+
+def add_tags_post(post_tags_list, user, post):
+    for post_tag in post_tags_list:
+        tag = TagModel.objects.create(name=post_tag[1:]) if post_tag[0] == '#' \
+            else TagModel.objects.create(name=post_tag)
+        tag.user.add(user)
+        tag.post.add(post)
+        tag.save()
