@@ -11,7 +11,7 @@ from main.factories import UserFactory, FollowerFollowingFactory, MediaTypeFacto
 NUM_USERS = 50
 NUM_MEDIA = 10
 NUM_POSTS = 250
-NUM_FOLLOWERFOLLOWING = 50
+NUM_FOLLOWER_FOLLOWING = 50
 MEDIA_TYPE = ['png', 'jpg', 'jpeg']
 
 
@@ -39,7 +39,7 @@ class Command(BaseCommand):
             person = UserFactory(is_verify=True)
             people.append(person)
 
-        for _ in range(NUM_FOLLOWERFOLLOWING):
+        for _ in range(NUM_FOLLOWER_FOLLOWING):
             FollowerFollowingFactory(followers=random.choice(people), following=random.choice(people))
 
         for _type in MEDIA_TYPE:
