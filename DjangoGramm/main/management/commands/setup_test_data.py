@@ -8,6 +8,12 @@ from main.models import UserModel, MediaTypeModel, FollowerFollowingModel, Media
 from main.factories import UserFactory, FollowerFollowingFactory, MediaTypeFactory, MediaFactory, \
     PostFactory, LikeFactory, TagFactory, BookmarksFactory
 
+NUM_USERS = 50
+NUM_MEDIA = 10
+NUM_POSTS = 250
+NUM_FOLLOWERFOLLOWING = 50
+MEDIA_TYPE = ['png', 'jpg', 'jpeg']
+
 
 class Command(BaseCommand):
     help = "Generates test data"
@@ -25,31 +31,27 @@ class Command(BaseCommand):
         BookmarksModel.objects.all().delete()
 
         people = []
-        media_types = []
         medias = []
         posts = []
+        media_types = []
 
-        for _ in range(50):
-            person = UserFactory()
+        for _ in range(NUM_USERS):
+            person = UserFactory(is_verify=True)
             people.append(person)
 
-        for _ in range(5):
-            following_followers = FollowerFollowingFactory()
-            follower = random.choices(people, k=8)
-            following = random.choices(people, k=8)
-            following_followers.follower.add(*follower)
-            following_followers.following.add(*following)
+        for _ in range(NUM_FOLLOWERFOLLOWING):
+            FollowerFollowingFactory(followers=random.choice(people), following=random.choice(people))
 
-        for _ in range(3):
-            media_type = MediaTypeFactory()
+        for _type in MEDIA_TYPE:
+            media_type = MediaTypeFactory(name=_type)
             media_types.append(media_type)
 
-        for _ in range(5):
-            media = MediaFactory()
+        for _ in range(NUM_MEDIA):
+            media = MediaFactory(media_type=random.choice(media_types))
             medias.append(media)
 
-        for _ in range(15):
-            post = PostFactory()
+        for _ in range(NUM_POSTS):
+            post = PostFactory(user=random.choice(people))
             current_media = random.choices(medias, k=8)
             post.medias.add(*current_media)
             posts.append(post)
@@ -57,11 +59,11 @@ class Command(BaseCommand):
         for _ in range(50):
             users = random.choices(people, k=8)
             current_post = random.choices(posts, k=8)
-            LikeFactory()
+            LikeFactory(user=random.choice(people), post=random.choice(posts))
             tag = TagFactory()
             tag.post.add(*current_post)
             tag.user.add(*users)
-            BookmarksFactory()
+            BookmarksFactory(user=random.choice(people), post=random.choice(posts))
 
 
 
