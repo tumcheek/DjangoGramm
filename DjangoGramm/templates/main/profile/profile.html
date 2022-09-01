@@ -30,6 +30,14 @@
         </form>
         {% else %}
         <p><a href="{% url 'main:profile' login_user_username %}">My profile</a></p>
+        <form action="{% url 'main:follow_user' user.username %}" method="post">
+            {% csrf_token %}
+            {% if is_follow %}
+            <button type="submit">Unfollow</button>
+            {% else %}
+            <button type="submit">Follow</button>
+            {% endif %}
+        </form>
         {% endif %}
         <h2>Posts</h2>
         {% for post in posts %}
