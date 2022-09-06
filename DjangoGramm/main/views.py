@@ -162,24 +162,22 @@ def bookmark_view(request, pk):
     return HttpResponseRedirect(previous_page)
 
 
-class NewPostView(View):
-    @staticmethod
-    def post(request):
-        form = request.POST
-        upload_media = request.FILES.getlist('media')
-        user = request.user
-        new_post = PostModel(user=user, content=form['content'])
+def add_new_post_view(request):
+    form = request.POST
+    upload_media = request.FILES.getlist('media')
+    user = request.user
+    new_post = PostModel(user=user, content=form['content'])
+    new_post.save()
+    for media in upload_media:
+        media_type = MediaTypeModel.objects.get(name=media.content_type[media.content_type.find('/') + 1:])
+        post_media = MediaModel(media_src=media, media_type_id=media_type.pk)
+        post_media.save()
+        new_post.medias.add(post_media)
         new_post.save()
-        for media in upload_media:
-            media_type = MediaTypeModel.objects.get(name=media.content_type[media.content_type.find('/') + 1:])
-            post_media = MediaModel(media_src=media, media_type_id=media_type.pk)
-            post_media.save()
-            new_post.medias.add(post_media)
-            new_post.save()
-        post_tags_list = form['tags'].split()
-        add_tags_post(post_tags_list, user, new_post)
+    post_tags_list = form['tags'].split()
+    add_tags_post(post_tags_list, user, new_post)
 
-        return redirect(reverse('main:profile', kwargs={'username': request.user.username}))
+    return redirect(reverse('main:profile', kwargs={'username': request.user.username}))
 
 
 class FeedView(View):
