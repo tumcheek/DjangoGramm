@@ -89,11 +89,12 @@ class LoginView(Login):
 class EmailVerifyView(View):
     def get(self, request, uidb64, token):
         user = self.get_user(uidb64)
-        if user is not None and token_generator.check_token(user, token):
-            user.is_verify = True
-            user.save()
-            login(request, user)
-            return redirect('main:profile_setting')
+        if user is None or not token_generator.check_token(user, token):
+            return HttpResponse('Error! Invalid link.')
+        user.is_verify = True
+        user.save()
+        login(request, user)
+        return redirect('main:profile_setting')
 
     @staticmethod
     def get_user(uidb64):
