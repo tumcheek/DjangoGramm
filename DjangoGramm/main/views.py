@@ -70,8 +70,8 @@ class ProfileSettingView(View):
     @staticmethod
     def post(request):
         form = request.POST
-        uploaded_avatar = request.FILES.get('avatar')
         user = request.user
+        uploaded_avatar = request.FILES.get('avatar')
         if uploaded_avatar:
             user.avatar_src = uploaded_avatar
         user.first_name = form['first_name']
