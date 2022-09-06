@@ -151,17 +151,15 @@ def like_view(request, pk):
     return HttpResponseRedirect(previous_page)
 
 
-class BookmarkView(View):
-    @staticmethod
-    def post(request, pk):
-        post = get_object_or_404(PostModel, id=pk)
-        previous_page = request.POST.get('next', '/')
-        if post.bookmarksmodel_set.filter(user_id=request.user.pk):
-            post.bookmarksmodel_set.filter(user_id=request.user.pk).delete()
-        else:
-            post_bookmark = BookmarksModel(post=post, user=request.user)
-            post_bookmark.save()
-        return HttpResponseRedirect(previous_page)
+def bookmark_view(request, pk):
+    post = get_object_or_404(PostModel, id=pk)
+    previous_page = request.POST.get('next', '/')
+    if post.bookmarksmodel_set.filter(user_id=request.user.pk):
+        post.bookmarksmodel_set.filter(user_id=request.user.pk).delete()
+    else:
+        post_bookmark = BookmarksModel(post=post, user=request.user)
+        post_bookmark.save()
+    return HttpResponseRedirect(previous_page)
 
 
 class NewPostView(View):
