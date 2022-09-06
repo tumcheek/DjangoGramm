@@ -31,42 +31,41 @@ class ProfileView(View):
                 return redirect('main:confirm_error')
         except AttributeError:
             return redirect('main:login')
-        if request.user.is_authenticated:
-            login_user_username = request.user.username
-            user = request.user if username == login_user_username else User.objects.get(username=username)
-            followers_count = user.followers.all().count()
-            following_count = user.following.all().count()
-            posts = get_user_posts_info(user.postmodel_set.all().order_by('-created_at'), request.user, user)
-            is_my_profile = True if username == login_user_username else False
-            is_follow = True if FollowerFollowingModel.objects\
-                .filter(followers=User.objects.get(username=username), following=request.user) else False
-            context = {
-                'user': user,
-                'avatar_src': Path(str(user.avatar_src)),
-                'followers_count': followers_count,
-                'following_count': following_count,
-                'posts': posts,
-                'is_my_profile': is_my_profile,
-                'login_user_username': login_user_username,
-                'is_follow': is_follow
+        if not request.user.is_authenticated:
+            return redirect('main:login')
 
+        login_user_username = request.user.username
+        user = request.user if username == login_user_username else User.objects.get(username=username)
+        followers_count = user.followers.all().count()
+        following_count = user.following.all().count()
+        posts = get_user_posts_info(user.postmodel_set.all().order_by('-created_at'), request.user, user)
+        is_my_profile = True if username == login_user_username else False
+        is_follow = True if FollowerFollowingModel.objects\
+            .filter(followers=User.objects.get(username=username), following=request.user) else False
+        context = {
+            'user': user,
+            'avatar_src': Path(str(user.avatar_src)),
+            'followers_count': followers_count,
+            'following_count': following_count,
+            'posts': posts,
+            'is_my_profile': is_my_profile,
+            'login_user_username': login_user_username,
+            'is_follow': is_follow
             }
-            return render(request, self.template_name, context)
-
-        return redirect('main:login')
+        return render(request, self.template_name, context)
 
 
 class ProfileSettingView(View):
     template_name = 'main/profile/profile_settings.html'
 
     def get(self, request):
-        if request.user.is_authenticated:
-            context = {
-                'username': request.user.username
-            }
-            return render(request, self.template_name, context)
+        if not request.user.is_authenticated:
+            return redirect('main:login')
+        context = {
+            'username': request.user.username
+        }
 
-        return redirect('main:login')
+        return render(request, self.template_name, context)
 
     @staticmethod
     def post(request):
@@ -190,49 +189,49 @@ class FeedView(View):
     template_name = 'main/profile/feed.html'
 
     def get(self, request):
-        if request.user.is_authenticated:
-            user = request.user
-            all_following = user.following.all()
-            posts = []
+        if not request.user.is_authenticated:
+            return redirect('main:login')
+        user = request.user
+        all_following = user.following.all()
+        posts = []
 
-            for following in all_following:
-                user_posts = PostModel.objects\
-                    .filter(user_id=following.followers_id)\
-                    .order_by('-created_at')
-                for user_post in user_posts:
-                    posts.append(get_post_info(user_post, user, User.objects.get(pk=following.followers_id)))
-            context = {
-                'user': request.user.username,
-                'posts': sorted(posts, key=lambda x: x['created_at'], reverse=True)
+        for following in all_following:
+            user_posts = PostModel.objects\
+                .filter(user_id=following.followers_id)\
+                .order_by('-created_at')
+            for user_post in user_posts:
+                posts.append(get_post_info(user_post, user, User.objects.get(pk=following.followers_id)))
+        context = {
+            'user': request.user.username,
+            'posts': sorted(posts, key=lambda x: x['created_at'], reverse=True)
             }
-            return render(request, self.template_name, context)
-        return redirect('main:login')
+        return render(request, self.template_name, context)
 
 
 class FollowersFollowingView(View):
     template_name = 'main/profile/follower_following.html'
 
     def get(self, request, username, followers_following):
-        if request.user.is_authenticated:
-            current_user_page = User.objects.get(username=username)
-            login_user_username = request.user.username
-            user_list = []
-            if followers_following == 'followers':
-                user_follower_following = current_user_page.followers.all()
-                for user in user_follower_following:
-                    user_list.append(User.objects.get(pk=user.following_id))
-            else:
-                user_follower_following = current_user_page.following.all()
-                for user in user_follower_following:
-                    user_list.append(User.objects.get(pk=user.followers_id))
+        if not request.user.is_authenticated:
+            return redirect('main:login')
+        current_user_page = User.objects.get(username=username)
+        login_user_username = request.user.username
+        user_list = []
+        if followers_following == 'followers':
+            user_follower_following = current_user_page.followers.all()
+            for user in user_follower_following:
+                user_list.append(User.objects.get(pk=user.following_id))
+        else:
+            user_follower_following = current_user_page.following.all()
+            for user in user_follower_following:
+                user_list.append(User.objects.get(pk=user.followers_id))
 
-            context = {
-                'user_list': user_list,
-                'follower_following': followers_following,
-                'login_user_username': login_user_username
-            }
-            return render(request, self.template_name, context)
-        return redirect('main:login')
+        context = {
+            'user_list': user_list,
+            'follower_following': followers_following,
+            'login_user_username': login_user_username
+        }
+        return render(request, self.template_name, context)
 
 
 def add_new_tags_view(request, pk):
