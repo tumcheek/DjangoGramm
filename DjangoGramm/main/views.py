@@ -138,19 +138,17 @@ class RegistrationView(View):
         return render(request, self.template_name, context)
 
 
-class LikeView(View):
-    @staticmethod
-    def post(request, pk):
-        post = get_object_or_404(PostModel, id=pk)
-        previous_page = request.POST.get('next', '/')
+def like_view(request, pk):
+    post = get_object_or_404(PostModel, id=pk)
+    previous_page = request.POST.get('next', '/')
 
-        if post.likemodel_set.filter(user_id=request.user.pk):
-            post.likemodel_set.filter(user_id=request.user.pk).delete()
-        else:
-            post_like = LikeModel(post=post, user=request.user)
-            post_like.save()
+    if post.likemodel_set.filter(user_id=request.user.pk):
+        post.likemodel_set.filter(user_id=request.user.pk).delete()
+    else:
+        post_like = LikeModel(post=post, user=request.user)
+        post_like.save()
 
-        return HttpResponseRedirect(previous_page)
+    return HttpResponseRedirect(previous_page)
 
 
 class BookmarkView(View):
