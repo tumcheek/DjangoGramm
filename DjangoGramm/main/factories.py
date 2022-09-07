@@ -7,9 +7,10 @@ from .models import UserModel, MediaTypeModel, FollowerFollowingModel, MediaMode
 class UserFactory(DjangoModelFactory):
     class Meta:
         model = UserModel
+        django_get_or_create = ('username',)
     username = factory.Faker('user_name')
     email = factory.Faker('email')
-    password = factory.Faker('password')
+    password = factory.PostGenerationMethodCall('set_password', 'defaultpassword')
     first_name = factory.Faker('first_name')
     last_name = factory.Faker('last_name')
     bio = factory.Faker('sentence', nb_words=5)
@@ -19,6 +20,7 @@ class UserFactory(DjangoModelFactory):
 class FollowerFollowingFactory(DjangoModelFactory):
     class Meta:
         model = FollowerFollowingModel
+        django_get_or_create = ('followers', 'following',)
 
     followers = factory.SubFactory(UserFactory)
     following = factory.SubFactory(UserFactory)
