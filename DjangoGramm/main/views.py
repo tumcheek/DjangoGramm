@@ -1,15 +1,14 @@
 from django.core.exceptions import ValidationError
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.http import urlsafe_base64_decode
-from django.views import generic, View
-from django.http import HttpResponse, Http404, HttpResponseRedirect
+from django.views import View
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate, get_user_model, logout
-from .forms import SignupForm
+from django.contrib.auth import login, get_user_model
 from django.contrib.auth.tokens import default_token_generator as \
     token_generator
-from .utils import send_email_for_verify, get_post_info, get_user_posts_info, add_tags_post
+from .utils import get_post_info, get_user_posts_info, add_tags_post
 from pathlib import Path
 from .models import *
 from django.contrib.auth.views import LoginView as Login
@@ -110,32 +109,6 @@ class EmailVerifyView(View):
         ):
             user = None
         return user
-
-
-class RegistrationView(View):
-    template_name = 'main/registration/register.html'
-
-    def get(self, request):
-        context = {
-            'form': SignupForm()
-        }
-        return render(request, self.template_name, context)
-
-    def post(self, request):
-        form = SignupForm(request.POST)
-
-        if form.is_valid():
-            form.save()
-            email = form.cleaned_data.get('email')
-            password = form.cleaned_data.get('password1')
-            user = authenticate(email=email, password=password)
-            send_email_for_verify(request, user)
-            return redirect('main:confirm_email')
-        context = {
-            'form': form
-        }
-
-        return render(request, self.template_name, context)
 
 
 def like_view(request, pk):
