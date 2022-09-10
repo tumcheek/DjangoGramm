@@ -142,7 +142,10 @@ def add_new_post_view(request):
     new_post = PostModel(user=user, content=form['content'])
     new_post.save()
     for media in upload_media:
-        media_type = MediaTypeModel.objects.get(name=media.content_type[media.content_type.find('/') + 1:])
+        try:
+            media_type = MediaTypeModel.objects.get(name=media.content_type[media.content_type.find('/') + 1:])
+        except MediaTypeModel.DoesNotExist:
+            media_type = MediaTypeModel.objects.create(name=media.content_type[media.content_type.find('/') + 1:])
         post_media = MediaModel(media_src=media, media_type_id=media_type.pk)
         post_media.save()
         new_post.medias.add(post_media)
@@ -215,7 +218,6 @@ def follow_user_view(request, username):
         if request.user.following.filter(followers_id=User.objects.get(username=username).pk):
             request.user.following.filter(followers_id=User.objects.get(username=username).pk).delete()
         else:
-            pass
             FollowerFollowingModel.objects.create(followers=User.objects.get(username=username), following=request.user)
         return redirect(reverse('main:profile', kwargs={'username': username}))
 
