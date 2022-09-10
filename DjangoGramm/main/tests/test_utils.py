@@ -1,6 +1,5 @@
 from django.test import TestCase, Client
 from django.urls import reverse
-from pathlib import Path
 from ..models import *
 from ..utils import get_post_info
 
@@ -17,7 +16,6 @@ class UtilsTest(TestCase):
         )
         self.user_password = 'PassE228'
         self.media_type = MediaTypeModel.objects.create(name='jpg')
-        self.img = Path().resolve().parent / 'test_media' / 'test.jpg'
         self.tags = TagModel.objects.create(name='test')
         self.media = MediaModel.objects.create(
             media_src='test.jpg',
