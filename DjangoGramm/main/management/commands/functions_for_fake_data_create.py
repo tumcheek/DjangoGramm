@@ -1,7 +1,7 @@
 import random
 
-from main.factories import *
-from main.models import *
+from ...factories import *
+from ...models import *
 
 
 def delete_all_data():
