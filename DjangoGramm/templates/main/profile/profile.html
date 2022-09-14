@@ -2,12 +2,12 @@
 {% block title%} Profile  {% endblock %}
 {% block content %}
     <div class="user_information">
-        <p><img src="/media/{{ avatar_src }}" alt="avatar" width="200" height="200"></p>
-        <p>{{ user.username }}</p>
-        <p>{{ user.first_name }} {{ user.last_name }}</p>
-        <p>{{ user.bio }}</p>
-        <p><a href="{% url 'main:followers_following' user.username 'followers' %}">Followers {{ followers_count }}</a></p>
-        <p><a href="{% url 'main:followers_following' user.username 'following' %}">Following {{ following_count }}</a></p>
+        <p><img src="{{ avatar_src.url }}" alt="avatar" width="200" height="200"></p>
+        <p>{{ username }}</p>
+        <p>{{ first_name }} {{ last_name }}</p>
+        <p>{{ bio }}</p>
+        <p><a href="{% url 'main:followers_following' username 'followers' %}">Followers {{ followers_count }}</a></p>
+        <p><a href="{% url 'main:followers_following' username 'following' %}">Following {{ following_count }}</a></p>
 
         {% if is_my_profile %}
         <p><a href="{% url 'main:feed' %}">Feed</a></p>
@@ -31,7 +31,7 @@
         </form>
         {% else %}
         <p><a href="{% url 'main:profile' login_user_username %}">My profile</a></p>
-        <form action="{% url 'main:follow_user' user.username %}" method="post">
+        <form action="{% url 'main:follow_user' username %}" method="post">
             {% csrf_token %}
             {% if is_follow %}
             <button type="submit">Unfollow</button>

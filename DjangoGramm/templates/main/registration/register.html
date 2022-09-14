@@ -1,10 +1,16 @@
 {% extends '../base.html' %}
 {% block title%} Registration  {% endblock %}
 {% block content %}
+    {% if is_complete %}
+    <div>
+        <p>Pleas check your email</p>
+    </div>
+{% else %}
     <form action="{% url 'main:register' %}" method="post">
         {{form}}
         {% csrf_token %}
         <button type="submit" class="btn btn-success">submit</button>
         <p>Have an account? <a href="{% url 'main:login' %}">Log in</a></p>
     </form>
+{% endif %}
 {% endblock %}

@@ -7,7 +7,7 @@
     <div class="post">
         <div class="post_creator_info">
             <p>
-                <img src="/media/{{ post.post_creator_avatar }}" width="50" height="50" alt="">
+                <img src="{{ post.post_creator_avatar.url }}" width="50" height="50" alt="">
                 <a href="{% url 'main:profile' post.post_creator %}">{{ post.post_creator }}</a>
             </p>
 
@@ -16,7 +16,7 @@
         <span>{{ post.created_at }}</span>
             <div class="post_img">
                 {% for media in post.media %}
-                <img src="/media/{{ media }}" width="300" height="300" alt="">
+                <img src="{{ media.url }}" width="300" height="300" alt="">
                 {% endfor %}
             </div>
                 {% for post_tag in post.tags %}
