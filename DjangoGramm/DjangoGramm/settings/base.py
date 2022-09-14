@@ -21,8 +21,8 @@ DEBUG = False
 ALLOWED_HOSTS = []
 
 AUTH_USER_MODEL = 'main.UserModel'
-LOGIN_REDIRECT_URL = '/djangogramm/login-redirect/'
-LOGOUT_REDIRECT_URL = '/djangogramm/login/'
+LOGIN_REDIRECT_URL = '/djangogramm/auth/login-redirect/'
+LOGOUT_REDIRECT_URL = '/djangogramm/auth/login/'
 
 # Application definition
 
@@ -137,3 +137,23 @@ MEDIA_URL = '/media/'
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
+
+# Logs
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'debug.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
