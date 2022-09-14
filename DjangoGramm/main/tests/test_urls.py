@@ -24,10 +24,6 @@ class TestUrls(SimpleTestCase):
         url = reverse('main:login')
         self.assertEqual(resolve(url).func.view_class, LoginView)
 
-    def test_confirm_email_url_is_resolved(self):
-        url = reverse('main:confirm_email')
-        self.assertEqual(resolve(url).func.view_class, TemplateView)
-
     def test_verify_email_url_is_resolved(self):
         url = reverse('main:verify_email', kwargs={'uidb64': 'test', 'token': 'test'})
         self.assertEqual(resolve(url).func.view_class, EmailVerifyView)
