@@ -40,10 +40,13 @@ class ProfileView(View):
         posts = get_user_posts_info(user.postmodel_set.all().order_by('-created_at'), request.user, user)
         is_my_profile = True if username == login_user_username else False
         is_follow = True if FollowerFollowingModel.objects\
-            .filter(followers=User.objects.get(username=username), following=request.user) else False
+            .filter(followers=user, following=request.user) else False
         context = {
-            'user': user,
-            'avatar_src': Path(str(user.avatar_src)),
+            'username': user.username,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'avatar_src': user.avatar_src,
+            'bio': user.bio,
             'followers_count': followers_count,
             'following_count': following_count,
             'posts': posts,
