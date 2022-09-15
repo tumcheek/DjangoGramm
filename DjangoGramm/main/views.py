@@ -69,8 +69,7 @@ class ProfileSettingView(View):
 
         return render(request, self.template_name, context)
 
-    @staticmethod
-    def post(request):
+    def post(self, request):
         form = request.POST
         user = request.user
         uploaded_avatar = request.FILES.get('avatar')
