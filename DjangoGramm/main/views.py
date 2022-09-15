@@ -21,6 +21,68 @@ def login_redirect_view(request):
     return redirect(reverse('main:profile', kwargs={'username': username}))
 
 
+def like_view(request, pk):
+    post = get_object_or_404(PostModel, id=pk)
+    previous_page = request.POST.get('next', '/')
+
+    if post.likemodel_set.filter(user_id=request.user.pk):
+        post.likemodel_set.filter(user_id=request.user.pk).delete()
+    else:
+        post_like = LikeModel(post=post, user=request.user)
+        post_like.save()
+
+    return HttpResponseRedirect(previous_page)
+
+
+def bookmark_view(request, pk):
+    post = get_object_or_404(PostModel, id=pk)
+    previous_page = request.POST.get('next', '/')
+    if post.bookmarksmodel_set.filter(user_id=request.user.pk):
+        post.bookmarksmodel_set.filter(user_id=request.user.pk).delete()
+    else:
+        post_bookmark = BookmarksModel(post=post, user=request.user)
+        post_bookmark.save()
+    return HttpResponseRedirect(previous_page)
+
+
+def add_new_post_view(request):
+    form = request.POST
+    upload_media = request.FILES.getlist('media')
+    user = request.user
+    new_post = PostModel(user=user, content=form['content'])
+    new_post.save()
+    for media in upload_media:
+        try:
+            media_type = MediaTypeModel.objects.get(name=media.content_type[media.content_type.find('/') + 1:])
+        except MediaTypeModel.DoesNotExist:
+            media_type = MediaTypeModel.objects.create(name=media.content_type[media.content_type.find('/') + 1:])
+        post_media = MediaModel(media_src=media, media_type_id=media_type.pk)
+        post_media.save()
+        new_post.medias.add(post_media)
+        new_post.save()
+    post_tags_list = form['tags'].split()
+    add_tags_post(post_tags_list, user, new_post)
+
+    return redirect(reverse('main:profile', kwargs={'username': request.user.username}))
+
+
+def add_new_tags_view(request, pk):
+    if request.method == "POST":
+        tag_list = request.POST['tags'].split()
+        post = PostModel.objects.get(pk=pk)
+        add_tags_post(tag_list, request.user, post)
+        return redirect(reverse('main:profile', kwargs={'username': request.user.username}))
+
+
+def follow_user_view(request, username):
+    if request.method == "POST":
+        if request.user.following.filter(followers_id=User.objects.get(username=username).pk):
+            request.user.following.filter(followers_id=User.objects.get(username=username).pk).delete()
+        else:
+            FollowerFollowingModel.objects.create(followers=User.objects.get(username=username), following=request.user)
+        return redirect(reverse('main:profile', kwargs={'username': username}))
+
+
 class ProfileView(View):
     template_name = 'main/profile/profile.html'
 
@@ -113,51 +175,6 @@ class EmailVerifyView(View):
         return user
 
 
-def like_view(request, pk):
-    post = get_object_or_404(PostModel, id=pk)
-    previous_page = request.POST.get('next', '/')
-
-    if post.likemodel_set.filter(user_id=request.user.pk):
-        post.likemodel_set.filter(user_id=request.user.pk).delete()
-    else:
-        post_like = LikeModel(post=post, user=request.user)
-        post_like.save()
-
-    return HttpResponseRedirect(previous_page)
-
-
-def bookmark_view(request, pk):
-    post = get_object_or_404(PostModel, id=pk)
-    previous_page = request.POST.get('next', '/')
-    if post.bookmarksmodel_set.filter(user_id=request.user.pk):
-        post.bookmarksmodel_set.filter(user_id=request.user.pk).delete()
-    else:
-        post_bookmark = BookmarksModel(post=post, user=request.user)
-        post_bookmark.save()
-    return HttpResponseRedirect(previous_page)
-
-
-def add_new_post_view(request):
-    form = request.POST
-    upload_media = request.FILES.getlist('media')
-    user = request.user
-    new_post = PostModel(user=user, content=form['content'])
-    new_post.save()
-    for media in upload_media:
-        try:
-            media_type = MediaTypeModel.objects.get(name=media.content_type[media.content_type.find('/') + 1:])
-        except MediaTypeModel.DoesNotExist:
-            media_type = MediaTypeModel.objects.create(name=media.content_type[media.content_type.find('/') + 1:])
-        post_media = MediaModel(media_src=media, media_type_id=media_type.pk)
-        post_media.save()
-        new_post.medias.add(post_media)
-        new_post.save()
-    post_tags_list = form['tags'].split()
-    add_tags_post(post_tags_list, user, new_post)
-
-    return redirect(reverse('main:profile', kwargs={'username': request.user.username}))
-
-
 class FeedView(View):
     template_name = 'main/profile/feed.html'
 
@@ -205,21 +222,3 @@ class FollowersFollowingView(View):
             'login_user_username': login_user_username
         }
         return render(request, self.template_name, context)
-
-
-def add_new_tags_view(request, pk):
-    if request.method == "POST":
-        tag_list = request.POST['tags'].split()
-        post = PostModel.objects.get(pk=pk)
-        add_tags_post(tag_list, request.user, post)
-        return redirect(reverse('main:profile', kwargs={'username': request.user.username}))
-
-
-def follow_user_view(request, username):
-    if request.method == "POST":
-        if request.user.following.filter(followers_id=User.objects.get(username=username).pk):
-            request.user.following.filter(followers_id=User.objects.get(username=username).pk).delete()
-        else:
-            FollowerFollowingModel.objects.create(followers=User.objects.get(username=username), following=request.user)
-        return redirect(reverse('main:profile', kwargs={'username': username}))
-
