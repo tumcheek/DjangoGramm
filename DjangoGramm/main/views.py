@@ -189,10 +189,11 @@ class FeedView(View):
             user_posts = PostModel.objects\
                 .filter(user_id=following.followers_id)\
                 .order_by('-created_at')
+            post_creator = User.objects.get(pk=following.followers_id)
             for user_post in user_posts:
-                posts.append(get_post_info(user_post, user, User.objects.get(pk=following.followers_id)))
+                posts.append(get_post_info(user_post, user, post_creator))
         context = {
-            'user': request.user.username,
+            'user': user.username,
             'posts': sorted(posts, key=lambda x: x['created_at'], reverse=True)
             }
         return render(request, self.template_name, context)
