@@ -1,6 +1,6 @@
 import random
 
-from ...factories import *
+from .factories import *
 from ...models import *
 
 
