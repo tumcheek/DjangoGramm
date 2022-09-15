@@ -1,6 +1,6 @@
 import factory
 from factory.django import DjangoModelFactory
-from .models import UserModel, MediaTypeModel, FollowerFollowingModel, MediaModel, PostModel,\
+from ...models import UserModel, MediaTypeModel, FollowerFollowingModel, MediaModel, PostModel,\
     LikeModel, TagModel, BookmarksModel
 
 
