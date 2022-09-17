@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
 from django.http import HttpResponse
@@ -14,6 +16,7 @@ from django.contrib.auth import authenticate, get_user_model
 from .forms import SignupForm
 
 User = get_user_model()
+logger = logging.getLogger(__name__)
 
 
 def send_email_for_verify(request, user):
@@ -65,6 +68,7 @@ class RegistrationView(View):
                 send_email_for_verify(request, user)
                 return redirect(reverse('main:register', args=['complete']))
             except User.DoesNotExist:
+                logger.debug(User.DoesNotExist)
                 return HttpResponse(status=500)
         context = {
             'form': form
