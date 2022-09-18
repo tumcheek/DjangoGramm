@@ -2,13 +2,13 @@
 {% block title%} Feed {% endblock %}
 {% block content %}
 
-<p><a href="{% url 'main:profile' user %}">My profile</a></p>
+<p><a class="text-decoration-none" href="{% url 'main:profile' user %}">My profile</a></p>
 {% for post in posts %}
     <div class="post">
         <div class="post_creator_info">
             <p>
                 <img src="{{ post.post_creator_avatar.url }}" width="50" height="50" alt="">
-                <a href="{% url 'main:profile' post.post_creator %}">{{ post.post_creator }}</a>
+                <a class="text-decoration-none" href="{% url 'main:profile' post.post_creator %}">{{ post.post_creator }}</a>
             </p>
 
         </div>
@@ -26,18 +26,18 @@
                     {% csrf_token %}
                 <input type="hidden" name="next" value="{{ request.path }}">
                 {% if post.is_liked %}
-                    <p><button type="submit">Unlike</button> {{ post.likes }} Likes</p>
+                    <p><button class="btn btn-danger" type="submit">Unlike</button> {{ post.likes }} Likes</p>
                 {% else %}
-                    <p><button type="submit">Like</button> {{ post.likes }} Likes</p>
+                    <p><button class="btn btn-success" type="submit">Like</button> {{ post.likes }} Likes</p>
                 {% endif %}
             </form>
             <form action="{% url 'main:bookmark_post' post.post_pk %}" method="post">
                     {% csrf_token %}
                 <input type="hidden" name="next" value="{{ request.path }}">
                 {% if post.is_bookmark %}
-                    <p><button type="submit">Bookmark</button> </p>
+                    <p><button class="btn btn-success" type="submit">Bookmark</button> </p>
                 {% else %}
-                    <p><button type="submit">Remove bookmark</button> </p>
+                    <p><button class="btn btn-danger" type="submit">Remove bookmark</button> </p>
                 {% endif %}
             </form>
         </div>

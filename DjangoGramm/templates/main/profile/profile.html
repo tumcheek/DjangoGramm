@@ -1,17 +1,22 @@
 {% extends '../base.html' %}
 {% block title%} Profile  {% endblock %}
 {% block content %}
-    <div class="user_information">
-        <p><img src="{{ avatar_src.url }}" alt="avatar" width="200" height="200"></p>
-        <p>{{ username }}</p>
-        <p>{{ first_name }} {{ last_name }}</p>
-        <p>{{ bio }}</p>
-        <p><a href="{% url 'main:followers_following' username 'followers' %}">Followers {{ followers_count }}</a></p>
-        <p><a href="{% url 'main:followers_following' username 'following' %}">Following {{ following_count }}</a></p>
+    <div class="user_information d-flex justify-content-between pt-3">
+        <div class="contact_info d-flex">
+            <p class="me-5"><img src="{{ avatar_src.url }}" alt="avatar" width="200" height="200"></p>
+                <div>
+                    <p class="fs-1">{{ username }}</p>
+                    <p>{{ first_name }} {{ last_name }}</p>
+                    <p>{{ bio }}</p>
+                </div>
+        </div>
+        <p><a class="text-decoration-none" href="{% url 'main:followers_following' username 'followers' %}">Followers {{ followers_count }}</a></p>
+        <p><a class="text-decoration-none" href="{% url 'main:followers_following' username 'following' %}">Following {{ following_count }}</a></p>
 
+    </div>
         {% if is_my_profile %}
-        <p><a href="{% url 'main:feed' %}">Feed</a></p>
-        <p><a href="{% url 'main:profile_setting' %}">Settings</a>  <a href="{% url 'main:logout' %}">Logout</a></p>
+        <p><a class="text-decoration-none" href="{% url 'main:feed' %}">Feed</a></p>
+        <p><a class="text-decoration-none" href="{% url 'main:profile_setting' %}">Settings</a>  <a class="text-decoration-none btn btn-danger" href="{% url 'main:logout' %}">Logout</a></p>
 
         <h2>Add new post</h2>
         <form action="{% url 'main:new_post' %}" method="post" enctype="multipart/form-data">
@@ -27,16 +32,16 @@
                 </label>
             </p>
             {% csrf_token %}
-            <p><button type="submit">add post</button></p>
+            <p><button class="btn btn-primary" type="submit">add post</button></p>
         </form>
         {% else %}
-        <p><a href="{% url 'main:profile' login_user_username %}">My profile</a></p>
+        <p><a class="text-decoration-none" href="{% url 'main:profile' login_user_username %}">My profile</a></p>
         <form action="{% url 'main:follow_user' username %}" method="post">
             {% csrf_token %}
             {% if is_follow %}
-            <button type="submit">Unfollow</button>
+            <button class="btn btn-danger" type="submit">Unfollow</button>
             {% else %}
-            <button type="submit">Follow</button>
+            <button class="btn btn-success" type="submit">Follow</button>
             {% endif %}
         </form>
         {% endif %}
@@ -58,7 +63,7 @@
             <form action="{% url 'main:new_tags' post.post_pk %}" method="post">
                 {% csrf_token %}
                 <input type="text" name="tags">
-                <button>Add new tags</button>
+                <button class="btn btn-primary">Add new tags</button>
             </form>
             {% endif %}
 
@@ -66,22 +71,20 @@
                     {% csrf_token %}
                 <input type="hidden" name="next" value="{{ request.path }}">
                 {% if post.is_liked %}
-                    <p><button type="submit">Unlike</button> {{ post.likes }} Likes</p>
+                    <p><button class="btn btn-danger" type="submit">Unlike</button> {{ post.likes }} Likes</p>
                 {% else %}
-                    <p><button type="submit">Like</button> {{ post.likes }} Likes</p>
+                    <p><button class="btn btn-success" type="submit">Like</button> {{ post.likes }} Likes</p>
                 {% endif %}
             </form>
             <form action="{% url 'main:bookmark_post' post.post_pk %}" method="post">
                     {% csrf_token %}
                 <input type="hidden" name="next" value="{{ request.path }}">
                 {% if post.is_bookmark %}
-                    <p><button type="submit">Bookmark</button> </p>
+                    <p><button class="btn btn-success" type="submit">Bookmark</button> </p>
                 {% else %}
-                    <p><button type="submit">Remove bookmark</button> </p>
+                    <p><button class="btn btn-danger" type="submit">Remove bookmark</button> </p>
                 {% endif %}
             </form>
         </div>
-
         {% endfor %}
-    </div>
 {% endblock %}
