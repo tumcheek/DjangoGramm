@@ -1,9 +1,10 @@
 {% extends '../base.html' %}
+{% load cloudinary %}
 {% block title%} Profile  {% endblock %}
 {% block content %}
     <div class="user_information d-flex justify-content-between pt-3">
         <div class="contact_info d-flex">
-            <p class="me-5"><img src="{{ avatar_src.url }}" alt="avatar" width="200" height="200"></p>
+            <p class="me-5">{% cloudinary avatar_src width=200 height=200 crop="fill" %}</p>
                 <div>
                     <p class="fs-1">{{ username }}</p>
                     <p>{{ first_name }} {{ last_name }}</p>
@@ -52,7 +53,7 @@
             <span>{{ post.created_at }}</span>
             <div class="post_img">
                 {% for media in post.media %}
-                <img src="/media/{{ media }}" width="300" height="300" alt="">
+                {% cloudinary media width=300 height=300 crop="fill" %}
                 {% endfor %}
             </div>
             {% for post_tag in post.tags %}
