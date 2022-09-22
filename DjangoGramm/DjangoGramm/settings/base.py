@@ -3,6 +3,10 @@ from pathlib import Path
 from dotenv import load_dotenv
 from os import getenv
 
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -35,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'debug_toolbar',
+    'cloudinary'
 ]
 
 MIDDLEWARE = [
@@ -115,6 +120,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+cloudinary.config(
+  cloud_name=getenv('CLOUD_NAME'),
+  api_key=getenv('API_KEY'),
+  api_secret=getenv('API_SECRET'),
+  secure=True
+)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
