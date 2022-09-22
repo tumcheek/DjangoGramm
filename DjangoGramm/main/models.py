@@ -1,12 +1,14 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.utils.translation import gettext_lazy as _
+from cloudinary.models import CloudinaryField
 
 
 class UserModel(AbstractUser):
     email = models.EmailField(unique=True)
     bio = models.CharField(max_length=250)
-    avatar_src = models.ImageField(upload_to='avatars', default='avatars/avatar.png')
+    avatar_src = CloudinaryField(
+        folder='avatars',
+        default='https://res.cloudinary.com/dbwofa3rl/image/upload/v1663590111/avatars/avatar_ox54lh.png')
     is_verify = models.BooleanField(default=False)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['usernames']
@@ -36,7 +38,7 @@ class TimeStampMixin(models.Model):
 
 class MediaModel(TimeStampMixin):
     media_type = models.ForeignKey(MediaTypeModel, on_delete=models.CASCADE)
-    media_src = models.ImageField(upload_to='post_media')
+    media_src = CloudinaryField('image', folder='posts_media')
 
 
 class PostModel(TimeStampMixin):
