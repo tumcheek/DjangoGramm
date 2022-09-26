@@ -1,10 +1,10 @@
+from cloudinary import uploader
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.contrib.auth.tokens import default_token_generator as \
     token_generator
-from django.core.files.uploadedfile import SimpleUploadedFile
 from pathlib import Path
 from ..models import *
 
@@ -39,7 +39,7 @@ class BaseTest(TestCase):
         self.new_tags_url = 'main:new_tags'
         self.follow_user_url = 'main:follow_user'
 
-        self.img = Path().resolve().parent / 'test_media' / 'test.jpg'
+        self.img = Path(__file__).resolve().parent / 'test_media' / 'test.jpg'
         self.media_type = MediaTypeModel.objects.create(name='jpg')
         self.followers_following_dict = {
             'username': self.user.username,
@@ -181,7 +181,7 @@ class BookmarkTest(BaseTest):
 
 class AddNewPostTest(BaseTest):
     def test_add_new_post(self):
-        media = SimpleUploadedFile(self.img, b"file_content")
+        media = uploader.upload(self.img)
         self.client.post(reverse(self.login_url), data={'username': self.user.email, 'password': self.user_password},
                          format='text/html')
 
