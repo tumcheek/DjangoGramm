@@ -2,6 +2,8 @@ import random
 
 from .factories import *
 from ...models import *
+from cloudinary import uploader
+from faker import Faker
 
 
 def delete_all_data():
@@ -39,7 +41,9 @@ def create_fake_media_types(types):
 def create_fake_medias(num_media, media_types):
     medias = []
     for _ in range(num_media):
-        media = MediaFactory(media_type=random.choice(media_types))
+        media = MediaFactory(
+            media_type=random.choice(media_types),
+            media_src=uploader.upload(Faker().image(), folder='posts_media/')['url'])
         medias.append(media)
     return medias
 
