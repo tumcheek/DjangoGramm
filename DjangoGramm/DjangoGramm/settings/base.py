@@ -121,12 +121,17 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# Cloudinary
 cloudinary.config(
   cloud_name=getenv('CLOUD_NAME'),
   api_key=getenv('API_KEY'),
   api_secret=getenv('API_SECRET'),
   secure=True
 )
+
+CLOUDINARY_AVATAR_FOLDER = 'avatars'
+CLOUDINARY_DEFAULT_IMG = 'https://res.cloudinary.com/dbwofa3rl/image/upload/v1663590111/avatars/avatar_ox54lh.png'
+CLOUDINARY_MEDIA_FOLDER = 'posts_media'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
