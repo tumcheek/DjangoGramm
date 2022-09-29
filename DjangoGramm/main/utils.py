@@ -43,7 +43,7 @@ def get_post_info(post, user, post_creator):
         'post_content': post.content,
         'created_at': post.created_at,
         'post_pk': post.pk,
-        'media': all_post_media,
+        'media': list(map(lambda x: str(x), all_post_media)),
         'tags': all_post_tags,
         'likes': post.likemodel_set.all().count(),
         'is_liked': True if post.likemodel_set.filter(user_id=user.pk) else False,
@@ -52,12 +52,3 @@ def get_post_info(post, user, post_creator):
     }
 
     return post_info
-
-
-def add_tags_post(post_tags_list, user, post):
-    for post_tag in post_tags_list:
-        tag = TagModel.objects.create(name=post_tag[1:]) if post_tag[0] == '#' \
-            else TagModel.objects.create(name=post_tag)
-        tag.user.add(user)
-        tag.post.add(post)
-        tag.save()
