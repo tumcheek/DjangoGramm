@@ -2,6 +2,8 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from ..models import *
 from ..utils import get_post_info
+from pathlib import Path
+from cloudinary import uploader, CloudinaryResource
 
 
 class UtilsTest(TestCase):
@@ -17,12 +19,20 @@ class UtilsTest(TestCase):
         self.user_password = 'PassE228'
         self.media_type = MediaTypeModel.objects.create(name='jpg')
         self.tags = TagModel.objects.create(name='test')
+        self.img = Path(__file__).resolve().parent / 'test_media' / 'test.jpg'
+        self.data = uploader.upload(self.img,  folder='posts_media/')['url']
+        self.media = MediaModel.objects.create(
+            media_src=self.data,
+            media_type=self.media_type
+        )
         self.post = PostModel.objects.create(
             user=self.user,
             content='Test'
         )
         self.tags.post.add(self.post)
         self.tags.save()
+        self.post.medias.add(self.media)
+        self.post.save()
         self.login_url = 'main:login'
         self.result = {
             'post_creator': self.user.username,
@@ -30,7 +40,7 @@ class UtilsTest(TestCase):
             'post_content': self.post.content,
             'created_at': self.post.created_at,
             'post_pk': self.post.pk,
-            'media': [],
+            'media': [self.media.media_src[:self.media.media_src.find('.jpg')]],
             'tags': ['test'],
             'likes': self.post.likemodel_set.all().count(),
             'is_liked': True if self.post.likemodel_set.filter(user_id=self.user.pk) else False,
