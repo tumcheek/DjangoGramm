@@ -1,5 +1,3 @@
-from django.conf import settings
-from django.conf.urls.static import static
 from django.urls import path, include
 from django.views.generic import TemplateView
 from django.contrib.auth.views import LogoutView
@@ -10,7 +8,7 @@ from .registration_view import RegistrationView
 app_name = 'main'
 
 urlpatterns = [
-    path('new_tags/<int:pk>/', views.add_new_tags_view, name='new_tags'),
+    path('new_tags/<int:pk>/', views.AddNewTagsView.as_view(), name='new_tags'),
     path('auth/', include([
         path('login-redirect/', views.login_redirect_view, name='login_redirect'),
         path('logout/', LogoutView.as_view(), name='logout'),
@@ -22,7 +20,7 @@ urlpatterns = [
         path('registration/', RegistrationView.as_view(), name='register'),
     ])),
     path('feed/', views.FeedView.as_view(), name='feed'),
-    path('new_post/', views.add_new_post_view, name='new_post'),
+    path('new_post/', views.AddNewPostView.as_view(), name='new_post'),
     path('settings/', views.ProfileSettingView.as_view(), name='profile_setting'),
     path('<str:username>/', views.ProfileView.as_view(), name='profile'),
     path('<str:username>/follow', views.follow_user_view, name='follow_user'),
