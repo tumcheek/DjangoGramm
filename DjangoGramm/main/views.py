@@ -193,3 +193,13 @@ class FollowersFollowingView(View):
             'login_user_username': login_user_username
         }
         return render(request, self.template_name, context)
+
+
+class AddTagsPostMixin:
+    def add_tags_post(self, post_tags_list, user, post):
+        for post_tag in post_tags_list:
+            tag = TagModel.objects.create(name=post_tag[1:]) if post_tag[0] == '#' \
+                else TagModel.objects.create(name=post_tag)
+            tag.user.add(user)
+            tag.post.add(post)
+            tag.save()
