@@ -203,3 +203,24 @@ class AddTagsPostMixin:
             tag.user.add(user)
             tag.post.add(post)
             tag.save()
+
+
+class AddNewPostView(AddTagsPostMixin, View):
+    def post(self, request):
+        form = request.POST
+        upload_media = request.FILES.getlist('media')
+        user = request.user
+        new_post = PostModel(user=user, content=form['content'])
+        new_post.save()
+        for media in upload_media:
+            try:
+                media_type = MediaTypeModel.objects.get(name=media.content_type[media.content_type.find('/') + 1:])
+            except MediaTypeModel.DoesNotExist:
+                media_type = MediaTypeModel.objects.create(name=media.content_type[media.content_type.find('/') + 1:])
+            post_media = MediaModel(media_src=media, media_type_id=media_type.pk)
+            post_media.save()
+            new_post.medias.add(post_media)
+            new_post.save()
+        post_tags_list = form['tags'].split()
+        super().add_tags_post(post_tags_list, user, new_post)
+        return redirect(reverse('main:profile', kwargs={'username': request.user.username}))
