@@ -8,8 +8,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, get_user_model
 from django.contrib.auth.tokens import default_token_generator as \
     token_generator
-from .utils import get_post_info, get_user_posts_info, add_tags_post
-from pathlib import Path
+from .utils import get_post_info, get_user_posts_info
 from .models import *
 from django.contrib.auth.views import LoginView as Login
 
@@ -43,35 +42,6 @@ def bookmark_view(request, pk):
         post_bookmark = BookmarksModel(post=post, user=request.user)
         post_bookmark.save()
     return HttpResponseRedirect(previous_page)
-
-
-def add_new_post_view(request):
-    form = request.POST
-    upload_media = request.FILES.getlist('media')
-    user = request.user
-    new_post = PostModel(user=user, content=form['content'])
-    new_post.save()
-    for media in upload_media:
-        try:
-            media_type = MediaTypeModel.objects.get(name=media.content_type[media.content_type.find('/') + 1:])
-        except MediaTypeModel.DoesNotExist:
-            media_type = MediaTypeModel.objects.create(name=media.content_type[media.content_type.find('/') + 1:])
-        post_media = MediaModel(media_src=media, media_type_id=media_type.pk)
-        post_media.save()
-        new_post.medias.add(post_media)
-        new_post.save()
-    post_tags_list = form['tags'].split()
-    add_tags_post(post_tags_list, user, new_post)
-
-    return redirect(reverse('main:profile', kwargs={'username': request.user.username}))
-
-
-def add_new_tags_view(request, pk):
-    if request.method == "POST":
-        tag_list = request.POST['tags'].split()
-        post = PostModel.objects.get(pk=pk)
-        add_tags_post(tag_list, request.user, post)
-        return redirect(reverse('main:profile', kwargs={'username': request.user.username}))
 
 
 def follow_user_view(request, username):
