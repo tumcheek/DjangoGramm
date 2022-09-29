@@ -224,3 +224,11 @@ class AddNewPostView(AddTagsPostMixin, View):
         post_tags_list = form['tags'].split()
         super().add_tags_post(post_tags_list, user, new_post)
         return redirect(reverse('main:profile', kwargs={'username': request.user.username}))
+
+
+class AddNewTagsView(AddTagsPostMixin, View):
+    def post(self, request, pk):
+        tag_list = request.POST['tags'].split()
+        post = PostModel.objects.get(pk=pk)
+        super().add_tags_post(tag_list, request.user, post)
+        return redirect(reverse('main:profile', kwargs={'username': request.user.username}))
