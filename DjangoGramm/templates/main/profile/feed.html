@@ -16,7 +16,7 @@
         <span>{{ post.created_at }}</span>
             <div class="post_img">
                 {% for media in post.media %}
-                <img src="{{ media.url }}" width="300" height="300" alt="">
+                <img src="{{ media }}" width="300" height="300" alt="">
                 {% endfor %}
             </div>
                 {% for post_tag in post.tags %}
