@@ -2,13 +2,15 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from cloudinary.models import CloudinaryField
 
+from django.conf import settings
+
 
 class UserModel(AbstractUser):
     email = models.EmailField(unique=True)
     bio = models.CharField(max_length=250)
     avatar_src = CloudinaryField(
-        folder='avatars',
-        default='https://res.cloudinary.com/dbwofa3rl/image/upload/v1663590111/avatars/avatar_ox54lh.png')
+        folder=getattr(settings, 'CLOUDINARY_AVATAR_FOLDER'),
+        default=getattr(settings, 'CLOUDINARY_DEFAULT_IMG'))
     is_verify = models.BooleanField(default=False)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['usernames']
@@ -38,7 +40,7 @@ class TimeStampMixin(models.Model):
 
 class MediaModel(TimeStampMixin):
     media_type = models.ForeignKey(MediaTypeModel, on_delete=models.CASCADE)
-    media_src = CloudinaryField('image', folder='posts_media')
+    media_src = CloudinaryField('image', folder=getattr(settings, 'CLOUDINARY_MEDIA_FOLDER'))
 
 
 class PostModel(TimeStampMixin):
