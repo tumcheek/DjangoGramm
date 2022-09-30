@@ -1,5 +1,7 @@
 import os.path
 from pathlib import Path
+
+import django_heroku
 from dotenv import load_dotenv
 from os import getenv
 
@@ -124,6 +126,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+django_heroku.settings(locals())
 
 # Cloudinary
 cloudinary.config(
