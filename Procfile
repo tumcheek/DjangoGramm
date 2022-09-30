@@ -1,1 +1,1 @@
-web: gunicorn djangogramm.wsgi
+web: gunicorn DjangoGramm.wsgi
