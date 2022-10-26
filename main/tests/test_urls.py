@@ -9,7 +9,7 @@ from ..registration_view import RegistrationView
 
 class TestUrls(SimpleTestCase):
     def test_new_tags_url_is_resolved(self):
-        url = reverse('main:new_tags', kwargs={'pk': 1})
+        url = reverse('main:new_tags')
         self.assertEqual(resolve(url).func.view_class, AddNewTagsView)
 
     def test_login_redirect_url_is_resolved(self):
@@ -61,10 +61,10 @@ class TestUrls(SimpleTestCase):
         self.assertEqual(resolve(url).func.view_class, FollowersFollowingView)
 
     def test_like_post_url_is_resolved(self):
-        url = reverse('main:like_post', kwargs={'pk': 1})
+        url = reverse('main:like_post')
         self.assertEqual(resolve(url).func, like_view)
 
     def test_bookmark_post_url_is_resolved(self):
-        url = reverse('main:bookmark_post', kwargs={'pk': 1})
+        url = reverse('main:bookmark_post')
         self.assertEqual(resolve(url).func, bookmark_view)
 

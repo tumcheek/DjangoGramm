@@ -33,10 +33,10 @@ class BaseTest(TestCase):
         self.feed_url = 'main:feed'
         self.followers_following_url = 'main:followers_following'
         self.verify_email_url = 'main:verify_email'
-        self.like_url = 'main:like_post'
-        self.bookmark_url = 'main:bookmark_post'
+        self.like_url = '/djangogramm/like/'
+        self.bookmark_url = '/djangogramm/bookmark/'
         self.new_post_url = 'main:new_post'
-        self.new_tags_url = 'main:new_tags'
+        self.new_tags_url = '/djangogramm/new_tags/'
         self.follow_user_url = 'main:follow_user'
 
         self.img = Path(__file__).resolve().parent / 'test_media' / 'test.jpg'
@@ -50,6 +50,11 @@ class BaseTest(TestCase):
             'username': 'username',
             'password1': 'PassE228',
             'password2': 'PassE228',
+
+        }
+        self.user_data = {
+            'username': self.user.email,
+            'password': self.user_password
 
         }
         self.settings_data = {
@@ -75,16 +80,14 @@ class RegistrationView(BaseTest):
 
 class LoginRedirectTest(BaseTest):
     def test_login_redirect(self):
-        self.client.post(reverse(self.login_url), data={'username': self.user.email, 'password': self.user_password},
-                         format='text/html')
+        self.client.post(reverse(self.login_url), data=self.user_data, format='text/html')
         response = self.client.get(reverse(self.login_redirect_url))
         self.assertEqual(response.status_code, 302)
 
 
 class ProfileTest(BaseTest):
     def test_profile(self):
-        self.client.post(reverse(self.login_url), data={'username': self.user.email, 'password': self.user_password},
-                         format='text/html')
+        self.client.post(reverse(self.login_url), data=self.user_data, format='text/html')
         response = self.client.get(reverse(self.profile_url, kwargs={'username': self.user.username}))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'main/profile/profile.html')
@@ -92,14 +95,12 @@ class ProfileTest(BaseTest):
 
 class ProfileSettingTest(BaseTest):
     def test_settings_GET(self):
-        self.client.post(reverse(self.login_url), data={'username': self.user.email, 'password': self.user_password},
-                         format='text/html')
+        self.client.post(reverse(self.login_url), data=self.user_data, format='text/html')
         response = self.client.get(reverse(self.settings_url))
         self.assertEqual(response.status_code, 200)
 
     def test_settings_POST(self):
-        self.client.post(reverse(self.login_url), data={'username': self.user.email, 'password': self.user_password},
-                         format='text/html')
+        self.client.post(reverse(self.login_url), data=self.user_data, format='text/html')
         response = self.client.post(reverse(self.settings_url), self.settings_data)
         self.assertEqual(response.status_code, 302)
 
@@ -144,46 +145,39 @@ class EmailVerify(BaseTest):
 
 class LikeTest(BaseTest):
     def test_add_like(self):
-        self.client.post(reverse(self.login_url), data={'username': self.user.email, 'password': self.user_password},
-                         format='text/html')
-        response = self.client.post(reverse(self.like_url, args=[self.post.pk]))
-
-        self.assertEqual(response.status_code, 302)
+        self.client.post(reverse(self.login_url), data=self.user_data, format='text/html')
+        response = self.client.post(self.like_url, {'pk': self.post.pk})
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(self.post.likemodel_set.all().count(), 1)
 
     def test_delete_like(self):
-        self.client.post(reverse(self.login_url), data={'username': self.user.email, 'password': self.user_password},
+        self.client.post(reverse(self.login_url), data=self.user_data,
                          format='text/html')
-        self.client.post(reverse(self.like_url, args=[self.post.pk]))
-        response = self.client.post(reverse(self.like_url, args=[self.post.pk]))
-        self.assertEqual(response.status_code, 302)
+        self.client.post(self.like_url, {'pk': self.post.pk})
+        response = self.client.post(self.like_url, {'pk': self.post.pk})
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(self.post.likemodel_set.all().count(), 0)
 
 
 class BookmarkTest(BaseTest):
     def test_add_bookmark(self):
-        self.client.post(reverse(self.login_url), data={'username': self.user.email, 'password': self.user_password},
-                         format='text/html')
-        response = self.client.post(reverse(self.bookmark_url, args=[self.post.pk]))
-
-        self.assertEqual(response.status_code, 302)
+        self.client.post(reverse(self.login_url), data=self.user_data, format='text/html')
+        response = self.client.post(self.bookmark_url, {'pk': self.post.pk})
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(self.post.bookmarksmodel_set.all().count(), 1)
 
     def test_delete_bookmark(self):
-        self.client.post(reverse(self.login_url), data={'username': self.user.email, 'password': self.user_password},
-                         format='text/html')
-        self.client.post(reverse(self.bookmark_url, args=[self.post.pk]))
-        response = self.client.post(reverse(self.bookmark_url, args=[self.post.pk]))
-
-        self.assertEqual(response.status_code, 302)
+        self.client.post(reverse(self.login_url), data=self.user_data, format='text/html')
+        self.client.post(self.bookmark_url, {'pk': self.post.pk})
+        response = self.client.post(self.bookmark_url, {'pk': self.post.pk})
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(self.post.bookmarksmodel_set.all().count(), 0)
 
 
 class AddNewPostTest(BaseTest):
     def test_add_new_post(self):
         media = uploader.upload(self.img)
-        self.client.post(reverse(self.login_url), data={'username': self.user.email, 'password': self.user_password},
-                         format='text/html')
+        self.client.post(reverse(self.login_url), data=self.user_data, format='text/html')
 
         response = self.client.post(reverse(self.new_post_url), data={'content': 'test', 'media': [media],
                                                                       'tags': 'test'})
@@ -192,8 +186,7 @@ class AddNewPostTest(BaseTest):
 
 class FeedTest(BaseTest):
     def test_feed(self):
-        self.client.post(reverse(self.login_url), data={'username': self.user.email, 'password': self.user_password},
-                         format='text/html')
+        self.client.post(reverse(self.login_url), data=self.user_data, format='text/html')
         response = self.client.get(reverse(self.feed_url))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'main/profile/feed.html')
@@ -201,19 +194,16 @@ class FeedTest(BaseTest):
 
 class FollowersFollowing(BaseTest):
     def test_followers_following(self):
-        self.client.post(reverse(self.login_url), data={'username': self.user.email, 'password': self.user_password},
-                         format='text/html')
+        self.client.post(reverse(self.login_url), data=self.user_data, format='text/html')
         response = self.client.get(reverse(self.followers_following_url, kwargs=self.followers_following_dict))
         self.assertEqual(response.status_code, 200)
 
 
 class AddNewTagsTest(BaseTest):
     def test_add_new_tag(self):
-        self.client.post(reverse(self.login_url), data={'username': self.user.email, 'password': self.user_password},
-                         format='text/html')
-
-        response = self.client.post(reverse(self.new_tags_url, args=[self.post.pk]), data={'tags': 'testTag'})
-        self.assertEqual(response.status_code, 302)
+        self.client.post(reverse(self.login_url), data=self.user_data, format='text/html')
+        response = self.client.post(self.new_tags_url, {'pk': self.post.pk, 'tags': ['test']})
+        self.assertEqual(response.status_code, 200)
 
 
 class FollowUserTest(BaseTest):
@@ -224,7 +214,6 @@ class FollowUserTest(BaseTest):
             password='PassE228',
             is_verify=True
         )
-        self.client.post(reverse(self.login_url), data={'username': self.user.email, 'password': self.user_password},
-                         format='text/html')
+        self.client.post(reverse(self.login_url), data=self.user_data, format='text/html')
         response = self.client.post(reverse(self.follow_user_url, args=[user_to_follow.username]))
         self.assertEqual(response.status_code, 302)
