@@ -8,7 +8,9 @@ from .registration_view import RegistrationView
 app_name = 'main'
 
 urlpatterns = [
-    path('new_tags/<int:pk>/', views.AddNewTagsView.as_view(), name='new_tags'),
+    path('bookmark/', views.bookmark_view, name='bookmark_post'),
+    path('like/', views.like_view, name='like_post'),
+    path('new_tags/', views.AddNewTagsView.as_view(), name='new_tags'),
     path('auth/', include([
         path('login-redirect/', views.login_redirect_view, name='login_redirect'),
         path('logout/', LogoutView.as_view(), name='logout'),
@@ -26,8 +28,6 @@ urlpatterns = [
     path('<str:username>/follow', views.follow_user_view, name='follow_user'),
     path('<str:username>/<str:followers_following>/', views.FollowersFollowingView.as_view(),
          name='followers_following'),
-    path('like/<int:pk>', views.like_view, name='like_post'),
-    path('bookmark/<int:pk>', views.bookmark_view, name='bookmark_post'),
 
 
 ]

@@ -1,3 +1,5 @@
+import json
+
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
@@ -20,28 +22,34 @@ def login_redirect_view(request):
     return redirect(reverse('main:profile', kwargs={'username': username}))
 
 
-def like_view(request, pk):
+def like_view(request):
+    pk = request.POST.get('pk')
     post = get_object_or_404(PostModel, id=pk)
-    previous_page = request.POST.get('next', '/')
-
     if post.likemodel_set.filter(user_id=request.user.pk):
         post.likemodel_set.filter(user_id=request.user.pk).delete()
+        is_liked = False
     else:
         post_like = LikeModel(post=post, user=request.user)
         post_like.save()
+        is_liked = True
 
-    return HttpResponseRedirect(previous_page)
+    ctx = {'likes_count': post.likemodel_set.count(), 'is_liked': is_liked, 'pk': pk}
+    return HttpResponse(json.dumps(ctx), content_type='application/json')
 
 
-def bookmark_view(request, pk):
+def bookmark_view(request):
+    pk = request.POST.get('pk')
     post = get_object_or_404(PostModel, id=pk)
-    previous_page = request.POST.get('next', '/')
     if post.bookmarksmodel_set.filter(user_id=request.user.pk):
         post.bookmarksmodel_set.filter(user_id=request.user.pk).delete()
+        is_bookmark = False
     else:
         post_bookmark = BookmarksModel(post=post, user=request.user)
         post_bookmark.save()
-    return HttpResponseRedirect(previous_page)
+        is_bookmark = True
+
+    ctx = {'is_bookmark': is_bookmark}
+    return HttpResponse(json.dumps(ctx), content_type='application/json')
 
 
 def follow_user_view(request, username):
@@ -227,8 +235,9 @@ class AddNewPostView(AddTagsPostMixin, View):
 
 
 class AddNewTagsView(AddTagsPostMixin, View):
-    def post(self, request, pk):
+    def post(self, request):
+        pk = request.POST.get('pk')
         tag_list = request.POST['tags'].split()
         post = PostModel.objects.get(pk=pk)
         super().add_tags_post(tag_list, request.user, post)
-        return redirect(reverse('main:profile', kwargs={'username': request.user.username}))
+        return HttpResponse(json.dumps({'tags': tag_list}), content_type='application/json')
