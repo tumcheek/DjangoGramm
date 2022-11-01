@@ -1,0 +1,11 @@
+{% extends '../base.html' %}
+{% block title%} Login  {% endblock %}
+{% block content %}
+<h1>Login</h1>
+<form action="{% url 'main:login'%}" method="post">
+{{ form }}
+     {% csrf_token %}
+     <p><button type="submit" class="btn btn-success">submit</button></p>
+     <p>Don't have an account? <a href="{% url 'main:register' %}">Sign up</a></p>
+</form>
+{% endblock %}

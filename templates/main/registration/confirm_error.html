@@ -1,0 +1,7 @@
+{% extends '../base.html' %}
+{% block title%} Confirm error  {% endblock %}
+{% block content %}
+<b>You don't verify email!</b>
+<p>Confirm email!</p>
+<a href="{% url 'main:logout' %}">Logout</a>
+{% endblock %}

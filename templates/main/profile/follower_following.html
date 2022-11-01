@@ -1,0 +1,12 @@
+{% extends '../base.html' %}
+{% block title%} {{ follower_following }}  {% endblock %}
+{% block content %}
+<p><a class="text-decoration-none" href="{% url 'main:profile' login_user_username %}">My profile</a></p>
+{% if user_list %}
+{% for user in user_list %}
+<p><a class="text-decoration-none" href="{% url 'main:profile' user.username %}">{{ user.username }}</a></p>
+{% endfor %}
+{% else %}
+<p> You have 0 {{ follower_following }}</p>
+{% endif %}
+{% endblock %}

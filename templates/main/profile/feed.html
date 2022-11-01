@@ -1,0 +1,49 @@
+{% extends '../base.html' %}
+
+{% block title%} Feed {% endblock %}
+{% block content %}
+
+<p><a class="text-decoration-none" href="{% url 'main:profile' user %}">My profile</a></p>
+{% for post in posts %}
+    <div data-post="{{ post.post_pk }}" class="post">
+        <div class="post_creator_info">
+            <p>
+                <img src="{{ post.post_creator_avatar.url }}" width="50" height="50" alt="">
+                <a class="text-decoration-none" href="{% url 'main:profile' post.post_creator %}">{{ post.post_creator }}</a>
+            </p>
+
+        </div>
+            <p>{{ post.post_content }}</p>
+        <span>{{ post.created_at }}</span>
+            <div class="post_img">
+                {% for media in post.media %}
+                <img src="{{ media }}" width="300" height="300" alt="">
+                {% endfor %}
+            </div>
+                {% for post_tag in post.tags %}
+            <span class="tags">#{{ post_tag }}</span>
+                {% endfor %}
+            <form id="like_form" data-url="{% url 'main:like_post' %}" method="post">
+                {% csrf_token %}
+                {% if post.is_liked %}
+                    <p><button  class="btn btn-danger like" type="button">Unlike</button> <span class="count_likes">{{ post.likes }} Likes</span></p>
+                {% else %}
+                    <p><button  class="btn btn-success like" type="button">Like</button> <span class="count_likes">{{ post.likes }} Likes</span></p>
+                {% endif %}
+            </form>
+
+            <form id="bookmark_form" data-url="{% url 'main:bookmark_post' %}" method="post">
+                    {% csrf_token %}
+                {% if post.is_bookmark %}
+                    <p><button class="btn btn-success bookmark" type="button">Bookmark</button> </p>
+                {% else %}
+                    <p><button class="btn btn-danger bookmark" type="button">Remove bookmark</button> </p>
+                {% endif %}
+            </form>
+    </div>
+{% endfor %}
+
+{% load static %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<script src="{% static 'ajax.js' %}"></script>
+{% endblock %}

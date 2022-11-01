@@ -1,0 +1,97 @@
+{% extends '../base.html' %}
+{% load cloudinary %}
+{% block title%} Profile  {% endblock %}
+{% block content %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <div class="user_information d-flex justify-content-between pt-3">
+        <div class="contact_info d-flex">
+            <p class="me-5">{% cloudinary avatar_src width=200 height=200 crop="fill" %}</p>
+                <div>
+                    <p class="fs-1">{{ username }}</p>
+                    <p>{{ first_name }} {{ last_name }}</p>
+                    <p>{{ bio }}</p>
+                </div>
+        </div>
+        <p><a class="text-decoration-none" href="{% url 'main:followers_following' username 'followers' %}">Followers {{ followers_count }}</a></p>
+        <p><a class="text-decoration-none" href="{% url 'main:followers_following' username 'following' %}">Following {{ following_count }}</a></p>
+
+    </div>
+        {% if is_my_profile %}
+        <p><a class="text-decoration-none" href="{% url 'main:feed' %}">Feed</a></p>
+        <p><a class="text-decoration-none" href="{% url 'main:profile_setting' %}">Settings</a>  <a class="text-decoration-none btn btn-danger" href="{% url 'main:logout' %}">Logout</a></p>
+
+        <h2>Add new post</h2>
+        <form action="{% url 'main:new_post' %}" method="post" enctype="multipart/form-data">
+            <label>Load post photo <input type="file"  name="media" accept=".png, .jpg, .jpeg" required multiple></label>
+            <p>
+                <label>Add describe for post
+                    <textarea name="content"></textarea>
+                </label>
+            </p>
+            <p>
+                <label>Add tags for post
+                    <textarea name="tags"></textarea>
+                </label>
+            </p>
+            {% csrf_token %}
+            <p><button class="btn btn-primary" type="submit">add post</button></p>
+        </form>
+        {% else %}
+        <p><a class="text-decoration-none" href="{% url 'main:profile' login_user_username %}">My profile</a></p>
+        <form action="{% url 'main:follow_user' username %}" method="post">
+            {% csrf_token %}
+            {% if is_follow %}
+            <button class="btn btn-danger" type="submit">Unfollow</button>
+            {% else %}
+            <button class="btn btn-success" type="submit">Follow</button>
+            {% endif %}
+        </form>
+        {% endif %}
+        <h2>Posts</h2>
+        {% for post in posts %}
+        <div data-post="{{ post.post_pk }}" class="post">
+            <p>{{ post.post_content }}</p>
+            <span>{{ post.created_at }}</span>
+            <div class="post_img">
+                {% for media in post.media %}
+                {% cloudinary media width=300 height=300 crop="fill" %}
+                {% endfor %}
+            </div>
+            <div class="post_tags">
+                {% for post_tag in post.tags %}
+
+            <span class="tags">#{{ post_tag }}</span>
+                {% endfor %}
+            </div>
+
+            {% if is_my_profile %}
+            <form id="new_tag_form" data-url="{% url 'main:new_tags' %}" method="post">
+                {% csrf_token %}
+                <input type="text" name="tags">
+                <button class="btn btn-primary add_new_tag" type="button">Add new tags</button>
+            </form>
+            {% endif %}
+
+            <form id="like_form" data-url="{% url 'main:like_post' %}" method="post">
+                {% csrf_token %}
+                {% if post.is_liked %}
+                    <p><button  class="btn btn-danger like" type="button">Unlike</button> <span class="count_likes">{{ post.likes }} Likes</span></p>
+                {% else %}
+                    <p><button  class="btn btn-success like" type="button">Like</button> <span class="count_likes">{{ post.likes }} Likes</span></p>
+                {% endif %}
+            </form>
+
+            <form id="bookmark_form" data-url="{% url 'main:bookmark_post' %}" method="post">
+                    {% csrf_token %}
+                {% if post.is_bookmark %}
+                    <p><button class="btn btn-success bookmark" type="button">Bookmark</button> </p>
+                {% else %}
+                    <p><button class="btn btn-danger bookmark" type="button">Remove bookmark</button> </p>
+                {% endif %}
+            </form>
+        </div>
+
+        {% endfor %}
+{% load static %}
+<script src="{% static 'ajax.js' %}"></script>
+{% endblock %}
