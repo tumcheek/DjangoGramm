@@ -10,9 +10,12 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, get_user_model
 from django.contrib.auth.tokens import default_token_generator as \
     token_generator
+
+from .registration_view import send_email_for_verify
 from .utils import get_post_info, get_user_posts_info
 from .models import *
 from django.contrib.auth.views import LoginView as Login
+from social_django.models import UserSocialAuth
 
 User = get_user_model()
 
@@ -67,6 +70,19 @@ class ProfileView(View):
     def get(self, request, username):
         try:
             if not request.user.is_verify:
+                try:
+                    google_login = request.user.social_auth.get(provider='google-oauth2')
+                except UserSocialAuth.DoesNotExist:
+                    google_login = None
+                try:
+                    github_login = request.user.social_auth.get(provider='github')
+                except UserSocialAuth.DoesNotExist:
+                    github_login = None
+                social = True if google_login or github_login else False
+                if social:
+                    request.user.is_verify = True
+                    request.user.save()
+                    return redirect('main:profile_setting')
                 return redirect('main:confirm_error')
         except AttributeError:
             return redirect('main:login')

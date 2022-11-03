@@ -6,6 +6,9 @@
 {{ form }}
      {% csrf_token %}
      <p><button type="submit" class="btn btn-success">submit</button></p>
+    <p>or</p>
+    <p><a class="btn btn-primary" href="{% url 'social:begin' 'google-oauth2' %}">Log in with Google</a></p>
+    <p><a class="btn btn-primary" href="{% url 'social:begin' 'github' %}">Log in with GitHub</a></p>
      <p>Don't have an account? <a href="{% url 'main:register' %}">Sign up</a></p>
 </form>
 {% endblock %}

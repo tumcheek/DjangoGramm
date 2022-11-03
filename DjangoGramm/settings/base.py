@@ -1,4 +1,3 @@
-import os.path
 from pathlib import Path
 
 import django_heroku
@@ -40,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'debug_toolbar',
-    'cloudinary'
+    'cloudinary',
+    'social_django',
 ]
 
 MIDDLEWARE = [
@@ -54,6 +54,7 @@ MIDDLEWARE = [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    'social_django.middleware.SocialAuthExceptionMiddleware'
 ]
 
 ROOT_URLCONF = 'DjangoGramm.urls'
@@ -65,6 +66,8 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
@@ -181,3 +184,24 @@ LOGGING = {
         },
     },
 }
+
+# Authentication backends
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.google.GoogleOAuth2',
+    'social_core.backends.github.GithubOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+# GOOGLE social settings
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '753207367788-jg2o0a12c9efgru1qpnsas0j6hellr89.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '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'
+
+# GITHUB social settings
+SOCIAL_AUTH_GITHUB_KEY = 'd76673171cf893960cd9'
+SOCIAL_AUTH_GITHUB_SECRET = '282e2f7564c3d621eee1824dfe254b57913ab2b6'
+
+# SOCIAL NAMESPACE
+SOCIAL_AUTH_URL_NAMESPACE = 'social'
+
+# Database social settings
+SOCIAL_AUTH_JSONFIELD_ENABLED = True
