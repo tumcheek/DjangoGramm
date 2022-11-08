@@ -11,7 +11,6 @@ from django.contrib.auth import login, get_user_model
 from django.contrib.auth.tokens import default_token_generator as \
     token_generator
 
-from .registration_view import send_email_for_verify
 from .utils import get_post_info, get_user_posts_info
 from .models import *
 from django.contrib.auth.views import LoginView as Login
@@ -150,7 +149,7 @@ class EmailVerifyView(View):
             return HttpResponse('Error! Invalid link.')
         user.is_verify = True
         user.save()
-        login(request, user)
+        login(request, user, backend='django.contrib.auth.backends.ModelBackend')
         return redirect('main:profile_setting')
 
     @staticmethod
