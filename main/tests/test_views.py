@@ -1,17 +1,22 @@
 from cloudinary import uploader
-from django.test import TestCase, Client
+from django.test import TestCase, Client, RequestFactory
 from django.urls import reverse
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.contrib.auth.tokens import default_token_generator as \
     token_generator
 from pathlib import Path
+
+from social_django.models import UserSocialAuth
+
 from ..models import *
+from ..views import ProfileView
 
 
 class BaseTest(TestCase):
     def setUp(self):
         self.client = Client()
+        self.factory = RequestFactory()
         self.user = UserModel.objects.create_user(
             username='test',
             email='test@test.com',
@@ -20,6 +25,10 @@ class BaseTest(TestCase):
 
         )
         self.user_password = 'PassE228'
+        self.social_user = UserSocialAuth.objects.create(
+            user=self.user,
+            provider='google-oauth2',
+        )
         self.post = PostModel.objects.create(
             user=self.user,
             content='Test'
@@ -38,6 +47,7 @@ class BaseTest(TestCase):
         self.new_post_url = 'main:new_post'
         self.new_tags_url = '/djangogramm/new_tags/'
         self.follow_user_url = 'main:follow_user'
+        self.social_login_complete = 'social:complete'
 
         self.img = Path(__file__).resolve().parent / 'test_media' / 'test.jpg'
         self.media_type = MediaTypeModel.objects.create(name='jpg')
@@ -91,6 +101,15 @@ class ProfileTest(BaseTest):
         response = self.client.get(reverse(self.profile_url, kwargs={'username': self.user.username}))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'main/profile/profile.html')
+
+    def test_social_profile(self):
+        self.user.is_verify = False
+        self.user.save()
+        request = self.factory.get(reverse(self.social_login_complete, kwargs={'backend': 'google-oauth2'}))
+        request.user = self.user
+        request.user.social_auth.set([self.social_user])
+        response = ProfileView.as_view()(request, request.user.username)
+        self.assertEqual(response.url, reverse(self.settings_url))
 
 
 class ProfileSettingTest(BaseTest):
